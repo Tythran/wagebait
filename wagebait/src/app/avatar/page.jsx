@@ -3,14 +3,20 @@ import { createAvatar } from '@dicebear/core';
 import { openPeeps } from '@dicebear/collection';
 
 function App() {
+  const seed = 'player2';
   const avatar = useMemo(() => {
     return createAvatar(openPeeps, {
-      seed: 'player',
+      seed: seed,
       size: 128
     }).toDataUri();
-  }, []);
+  }, [seed]);
 
-  return <img src={avatar} alt="Avatar" />;
+  return <>
+  <p>
+    {seed}
+  </p>
+  <img src={avatar} alt="Avatar"/>;
+  </>
 }
 
 export default App;
