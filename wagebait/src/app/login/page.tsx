@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { createClient } from '@/utils/supabase/client';
@@ -68,9 +69,14 @@ export default function Login() {
           <div>
             Logged in as <strong>{email}</strong>
           </div>
-          <button type="button" className="btn btn-danger" onClick={signout}>
-            Logout
-          </button>
+          <div className="d-flex gap-2">
+            <Link href="/edit" className="btn btn-primary">
+              Edit games
+            </Link>
+            <button type="button" className="btn btn-danger" onClick={signout}>
+              Logout
+            </button>
+          </div>
         </>
       ) : (
         <button type="button" className="btn btn-primary" onClick={signInWithDiscord}>
