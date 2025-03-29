@@ -1,6 +1,6 @@
 'use client';
 
-import { signInWithDiscord } from './actions';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -12,9 +12,11 @@ export default function Home() {
           Join game
         </button>
 
-        <button type="button" className="btn btn-secondary" onClick={signInWithDiscord}>
-          Login with Discord
-        </button>
+        <Link href={'/login'}>
+          <button type="button" className="btn btn-secondary">
+            Login
+          </button>
+        </Link>
       </div>
     </div>
   );
