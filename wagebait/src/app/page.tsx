@@ -1,3 +1,5 @@
+'use client';
+
 import { signInWithDiscord } from './actions';
 
 export default function Home() {
