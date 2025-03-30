@@ -576,11 +576,10 @@ export default function EditPage() {
       <div className="flex-grow-1 p-4">
         {selectedGame ? (
           <>
-            <h3>{selectedGame.game_title}</h3>
+            <h3 className="md-3">{selectedGame.game_title}</h3>
 
             <div className="mb-4">
-              <h5 className="mb-4">Categories</h5>
-              <p className="mt-2 mb-4">Double click to edit title</p>
+              <p className="mt-2 mb-2 fst-italic">Double click to edit title</p>
               <DndContext onDragEnd={handleCategoryDragEnd}>
                 <SortableContext
                   items={(categoriesByGame[selectedGame.game_id] || []).map(
