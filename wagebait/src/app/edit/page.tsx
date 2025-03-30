@@ -538,31 +538,36 @@ export default function EditPage() {
         </h4>
         <div className="list-group mt-3">
           {games.map((game) => (
-            <div
-              key={game.game_id}
-              className="d-flex align-items-center justify-content-between mb-2"
-            >
-              <Game
-                game={game}
-                isActive={selectedGame?.game_id === game.game_id}
-                onEdit={() => {
-                  setSelectedGame(game);
-                  const gameCategories = categoriesByGame[game.game_id] || [];
-                  setActiveCategory(gameCategories[0]?.category_id || "");
-                }}
-                onDelete={() => handleDeleteGame(game.game_id)}
-                onRename={(newTitle) =>
-                  handleRenameGame(game.game_id, newTitle)
-                }
-              />
-              {selectedGame?.game_id === game.game_id && (
-                <i
-                  className="bi bi-play-circle-fill text-success ms-2 fs-5"
-                  role="button"
-                  title="Activate Game"
-                  onClick={handleActiveGame}
-                ></i>
-              )}
+            <div key={game.game_id} className="mb-2">
+              <div className="d-flex align-items-center justify-content-between w-100 border border-secondary rounded px-2 py-1">
+                <Game
+                  game={game}
+                  isActive={selectedGame?.game_id === game.game_id}
+                  onEdit={() => {
+                    setSelectedGame(game);
+                    const gameCategories = categoriesByGame[game.game_id] || [];
+                    setActiveCategory(gameCategories[0]?.category_id || "");
+                  }}
+                  onDelete={() => handleDeleteGame(game.game_id)}
+                  onRename={(newTitle) =>
+                    handleRenameGame(game.game_id, newTitle)
+                  }
+                />
+                {selectedGame?.game_id === game.game_id && (
+                  <i
+                    className="bi bi-play-fill text-success rounded bg-light-subtle p-1"
+                    role="button"
+                    title="Activate Game"
+                    onClick={handleActiveGame}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      textAlign: "center",
+                      lineHeight: "20px",
+                    }}
+                  ></i>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -582,7 +587,7 @@ export default function EditPage() {
                   )}
                   strategy={verticalListSortingStrategy}
                 >
-                  <div className="d-flex align-items-center gap-2 flex-wrap">
+                  <div className="d-flex align-items-center gap-2 flex-wrap mt-3">
                     {(categoriesByGame[selectedGame.game_id] || []).map(
                       (cat) => (
                         <div
@@ -594,6 +599,7 @@ export default function EditPage() {
                           }`}
                           onClick={() => setActiveCategory(cat.category_id)}
                           style={{ cursor: "pointer" }}
+                          title="Double click to rename"
                         >
                           {editingCategory === cat.category_id ? (
                             <input
