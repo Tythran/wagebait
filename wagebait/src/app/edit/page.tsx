@@ -538,31 +538,36 @@ export default function EditPage() {
         </h4>
         <div className="list-group mt-3">
           {games.map((game) => (
-            <div key={game.game_id} className="mb-2">
-              <div className="d-flex align-items-center justify-content-between w-100 py-1">
-                <Game
-                  game={game}
-                  isActive={selectedGame?.game_id === game.game_id}
-                  onEdit={() => {
-                    setSelectedGame(game);
-                    const gameCategories = categoriesByGame[game.game_id] || [];
-                    setActiveCategory(gameCategories[0]?.category_id || "");
-                  }}
-                  onDelete={() => handleDeleteGame(game.game_id)}
-                  onRename={(newTitle) =>
-                    handleRenameGame(game.game_id, newTitle)
-                  }
-                />
-                {selectedGame?.game_id === game.game_id && (
-                  <i
-                    className="bi bi-play-fill text-white bg-success rounded d-flex align-items-center justify-content-center ms-2"
-                    role="button"
-                    title="Activate Game"
-                    onClick={handleActiveGame}
-                    style={{ width: "32px", height: "32px" }}
-                  ></i>
-                )}
-              </div>
+            <div
+              key={game.game_id}
+              className={`d-flex align-items-center justify-content-between mb-2 border rounded px-2 py-2 w-100 ${
+                selectedGame?.game_id === game.game_id
+                  ? "border-primary bg-primary bg-opacity-25"
+                  : "border-secondary bg-dark"
+              }`}
+            >
+              <Game
+                game={game}
+                isActive={selectedGame?.game_id === game.game_id}
+                onEdit={() => {
+                  setSelectedGame(game);
+                  const gameCategories = categoriesByGame[game.game_id] || [];
+                  setActiveCategory(gameCategories[0]?.category_id || "");
+                }}
+                onDelete={() => handleDeleteGame(game.game_id)}
+                onRename={(newTitle) =>
+                  handleRenameGame(game.game_id, newTitle)
+                }
+              />
+              {selectedGame?.game_id === game.game_id && (
+                <i
+                  className="bi bi-play-fill text-white bg-success rounded d-flex align-items-center justify-content-center ms-2"
+                  role="button"
+                  title="Activate Game"
+                  onClick={handleActiveGame}
+                  style={{ width: "32px", height: "32px" }}
+                ></i>
+              )}
             </div>
           ))}
         </div>
