@@ -31,7 +31,7 @@ export interface QuestionData {
   correct: number[];
 }
 
-// --- Component ---
+
 export default function EditPage() {
   const [games, setGames] = useState<Game[]>([]);
   const [categoriesByGame, setCategoriesByGame] = useState<{ [key: string]: Category[] }>({});
@@ -40,16 +40,13 @@ export default function EditPage() {
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [editedCategoryName, setEditedCategoryName] = useState<string>("");
-  // FIX: Now we declare userId with its setter.
+
   const [userId, setUserId] = useState<string | null>(null);
 
-  // -----------------------------
-  // Fetch data from Supabase
-  // -----------------------------
   useEffect(() => {
     const fetchUserAndData = async () => {
       try {
-        // Step 1: Fetch the authenticated user
+
         const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError) {
           console.error("Error fetching user:", userError);
@@ -57,14 +54,14 @@ export default function EditPage() {
         }
   
         const currentUserId = userData?.user?.id || null;
-        setUserId(currentUserId); // Update state with userId
+        setUserId(currentUserId); 
   
         if (!currentUserId) {
           console.warn("User ID not found. Skipping games fetch.");
           return;
         }
   
-        // Step 2: Fetch games only after we have userId
+
         const { data: gamesData, error: gamesError } = await supabase
           .from("games")
           .select("*")
@@ -78,7 +75,7 @@ export default function EditPage() {
         setGames(gamesData || []);
         console.log("Games fetched successfully!", gamesData);
   
-        // Step 3: Fetch categories
+
         const { data: categoriesData, error: categoriesError } = await supabase.from("category").select("*");
         if (categoriesError) {
           console.error("Error fetching categories:", categoriesError);
@@ -94,7 +91,7 @@ export default function EditPage() {
         });
         setCategoriesByGame(catByGame);
   
-        // Step 4: Fetch questions
+
         const { data: questionsData, error: questionsError } = await supabase.from("question").select("*");
         if (questionsError) {
           console.error("Error fetching questions:", questionsError);
@@ -102,7 +99,7 @@ export default function EditPage() {
         }
   
         const questByCat: { [key: string]: QuestionData[] } = {};
-        (questionsData || []).forEach((q: any) => {
+        (questionsData || []).forEach((q: QuestionData) => {
           const catId = q.category_id;
           if (!questByCat[catId]) {
             questByCat[catId] = [];
@@ -111,13 +108,8 @@ export default function EditPage() {
             question_id: q.question_id,
             category_id: q.category_id,
             question_text: q.question_text ?? "",
-            options: [q.option_1 ?? "", q.option_2 ?? "", q.option_3 ?? "", q.option_4 ?? ""],
-            correct: [
-              ...(q.correct_1 ? [0] : []),
-              ...(q.correct_2 ? [1] : []),
-              ...(q.correct_3 ? [2] : []),
-              ...(q.correct_4 ? [3] : []),
-            ],
+            options: q.options || ["", "", "", ""],
+            correct: q.correct || [],
           });
         });
         setQuestionsByCategory(questByCat);
@@ -130,18 +122,15 @@ export default function EditPage() {
     fetchUserAndData();
   }, []);
 
-  // -----------------------------
-  // Game Handlers
-  // -----------------------------
   const handleAddGame = async () => {
     const defaultTitle = "new game";
     try {
-      // Ensure we have a valid userId before creating a game.
+
       if (!userId) {
         console.error("User not authenticated.");
         return;
       }
-      // Insert a new game with the default title.
+
       const { error } = await supabase.from("games").insert({
         game_title: defaultTitle,
         created_by: userId,
@@ -152,7 +141,7 @@ export default function EditPage() {
       }
       console.log("Game added successfully!");
 
-      // Immediately fetch the updated games list.
+
       const { data: updatedGames, error: fetchError } = await supabase.from("games").select("*").eq("created_by", userId);
       if (fetchError) {
         console.error("Error fetching updated games:", fetchError);
@@ -197,27 +186,25 @@ export default function EditPage() {
   };
   const handleDeleteGame = async (gameId: string) => {
     try {
-      // Delete the game from the "games" table.
+
       const { error } = await supabase.from("games").delete().eq("game_id", gameId);
       if (error) {
         console.error("Error deleting game:", error);
         return;
       }
       console.log("Game deleted successfully!");
-  
-      // Fetch the updated games list.
+
       const { data: updatedGames, error: fetchError } = await supabase
         .from("games")
         .select("*")
-        .eq("created_by", userId); // Ensure we filter by the current user
+        .eq("created_by", userId); 
   
       if (fetchError) {
         console.error("Error fetching updated games:", fetchError);
         return;
       }
       setGames(updatedGames || []);
-  
-      // If the deleted game was selected, clear the current selection.
+
       if (selectedGame && selectedGame.game_id === gameId) {
         setSelectedGame(null);
         setActiveCategory("");
@@ -235,9 +222,6 @@ export default function EditPage() {
 
 
 
-  // -----------------------------
-  // Category Handlers with Supabase Integration
-  // -----------------------------
   const handleAddCategory = async (categoryName: string) => {
     if (!categoryName || typeof categoryName !== 'string') {
       console.error('Invalid category name');
@@ -245,10 +229,10 @@ export default function EditPage() {
     }
   
     try {
-      // Insert the new category (id auto-generated)
+
       const { error } = await supabase.from('category').insert({
         category_name: categoryName,
-        game_id: selectedGame?.game_id, // Reference to the selected game
+        game_id: selectedGame?.game_id, 
       });
   
       if (error) {
@@ -257,8 +241,7 @@ export default function EditPage() {
       }
   
       console.log('Category added successfully!');
-  
-      // Immediately fetch and update local state for categories for the current game
+
       if (selectedGame) {
         const { data: updatedCategories, error: fetchError } = await supabase
           .from('category')
@@ -280,10 +263,6 @@ export default function EditPage() {
     }
   };
   
-  
-  
-
-  // Removed duplicate declaration of handleRenameCategory
   const handleRenameCategory = async () => {
     if (!selectedGame || !editingCategory || !editedCategoryName) {
       console.error("Invalid category rename operation!");
@@ -299,8 +278,7 @@ export default function EditPage() {
         console.error("Error renaming category:", error);
         return;
       }
-  
-      // Update local state for the selected game's categories.
+
       const updatedCategories = (categoriesByGame[selectedGame.game_id] || []).map((cat) =>
         cat.category_id === editingCategory ? { ...cat, category_name: editedCategoryName } : cat
       );
@@ -330,8 +308,7 @@ export default function EditPage() {
         console.error("Error deleting category:", error);
         return;
       }
-  
-      // Update local state by filtering out the deleted category.
+
       const updatedCategories = (categoriesByGame[selectedGame.game_id] || []).filter(
         (cat) => cat.category_id !== categoryId
       );
@@ -345,11 +322,6 @@ export default function EditPage() {
     }
   };
     
-  
-
-  // -----------------------------
-  // Question Handlers with Supabase Integration
-  // -----------------------------
   const handleAddQuestion = async (questionData: QuestionData) => {
     if (!activeCategory) {
       console.error('No active category selected.');
@@ -357,10 +329,9 @@ export default function EditPage() {
     }
   
     try {
-      // Insert the new question.
-      // We explicitly set defaults for options and correct flags so that none of them are undefined.
+
       const { error } = await supabase.from('question').insert({
-        category_id: activeCategory, // activeCategory is a string (the category id)
+        category_id: activeCategory,
         question_text: questionData.question_text,
         option_1: '',
         option_2: '',
@@ -378,8 +349,7 @@ export default function EditPage() {
       }
   
       console.log('Question added successfully!');
-  
-      // Immediately fetch updated questions for the active category.
+
       const { data: updatedQuestions, error: fetchError } = await supabase
         .from('question')
         .select('*')
@@ -389,9 +359,8 @@ export default function EditPage() {
         console.error('Error fetching updated questions:', fetchError);
         return;
       }
-  
-      // Transform the fetched rows so that each question has an "options" array and a "correct" array.
-      const transformedQuestions: QuestionData[] = (updatedQuestions || []).map((q: any) => ({
+
+      const transformedQuestions: QuestionData[] = (updatedQuestions || []).map((q: { question_id: string; category_id: string; question_text?: string; option_1?: string; option_2?: string; option_3?: string; option_4?: string; correct_1?: boolean; correct_2?: boolean; correct_3?: boolean; correct_4?: boolean; }) => ({
         question_id: q.question_id,
         category_id: q.category_id,
         question_text: q.question_text ?? "",
@@ -408,8 +377,7 @@ export default function EditPage() {
           ...(q.correct_4 ? [3] : []),
         ],
       }));
-  
-      // Update the state so the new question is immediately visible.
+
       setQuestionsByCategory({
         ...questionsByCategory,
         [activeCategory]: transformedQuestions,
@@ -423,13 +391,12 @@ export default function EditPage() {
   
   
   const handleUpdateQuestion = async (updatedQuestion: QuestionData) => {
-    // Ensure there's a selected category
+
     if (!selectedGame || !activeCategory) {
       console.error("Error: No game or category selected!");
       return;
     }
-  
-    // Update the question in Supabase
+
     const { error } = await supabase
       .from("question")
       .update({
@@ -449,8 +416,7 @@ export default function EditPage() {
       console.error("Error updating question:", error);
       return;
     }
-  
-    // Update the local state
+
     setQuestionsByCategory((prev) => {
       const updatedQuestions = prev[activeCategory].map((quest) =>
         quest.question_id === updatedQuestion.question_id
@@ -462,13 +428,13 @@ export default function EditPage() {
   };
 
   const handleDeleteQuestion = async (questionId: string) => {
-    // Ensure there's a selected category
+
     if (!selectedGame || !activeCategory) {
       console.error("Error: No game or category selected!");
       return;
     }
   
-    // Delete the question from Supabase
+
     const { error } = await supabase
       .from("question")
       .delete()
@@ -479,7 +445,7 @@ export default function EditPage() {
       return;
     }
   
-    // Update the local state
+
     setQuestionsByCategory((prev) => {
       const updatedQuestions = prev[activeCategory].filter(
         (quest) => quest.question_id !== questionId
@@ -489,7 +455,7 @@ export default function EditPage() {
   };
   
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: import("@dnd-kit/core").DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id || !activeCategory) return;
     setQuestionsByCategory((prev) => {
@@ -506,15 +472,10 @@ export default function EditPage() {
 
   const currentCategoryQuestions = questionsByCategory[activeCategory] || [];
 
-  // -----------------------------
-  // Render the page
-  // -----------------------------
-  // -----------------------------
-// Render the page
-// -----------------------------
+
 return (
   <div className="d-flex vh-100 bg-dark text-light animate__animated animate__fadeIn">
-    {/* Sidebar for Games */}
+
     <div className="border-end border-secondary p-3" style={{ width: "300px" }}>
       <h4 className="d-flex justify-content-between align-items-center">
         Games{" "}
@@ -545,13 +506,11 @@ return (
       </div>
     </div>
 
-    {/* Main Editor Area */}
     <div className="flex-grow-1 p-4">
       {selectedGame ? (
         <>
           <h3>{selectedGame.game_title}</h3>
 
-          {/* Categories Section */}
           <div className="mb-4">
             <h5>Categories</h5>
             <div className="d-flex align-items-center gap-2 flex-wrap">
@@ -617,7 +576,6 @@ return (
             )}
           </div>
 
-          {/* Questions Section */}
           <div className="mb-4">
             <h5>Questions</h5>
             {activeCategory ? (
@@ -626,7 +584,7 @@ return (
                   className="btn btn-outline-success mb-2"
                   onClick={() =>
                     handleAddQuestion({
-                      question_id: "", // Not used on insert – auto-generated by Supabase
+                      question_id: "", 
                       category_id: activeCategory,
                       question_text: "New Question",
                       options: ["", "", "", ""],

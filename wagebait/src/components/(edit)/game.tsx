@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { createClient } from "@/utils/supabase/client";
 
 interface GameType {
@@ -14,16 +14,6 @@ interface GameProps {
   onRename: (newTitle: string) => void;
   isActive: boolean;
 }
-
-const fetchUser = async (): Promise<string | null> => {
-  const supabase = createClient();
-  const { data, error } = await supabase.auth.getUser();
-  if (error) {
-    console.error("Error fetching user:", error);
-    return null;
-  }
-  return data?.user?.id || null;
-};
 
 const updateGame = async (id: string, newTitle: string) => {
   const supabase = createClient();
@@ -41,13 +31,6 @@ export default function Game({ game, onEdit, onDelete, onRename, isActive }: Gam
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(game.game_title);
  
-
-  useEffect(() => {
-    const getUser = async () => {
-      const id = await fetchUser();
-    };
-    getUser();
-  }, []);
 
   const handleSave = async () => {
     const trimmed = title.trim();
