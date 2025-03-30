@@ -1,0 +1,17 @@
+.layout {
+  height: 100dvh;
+  display: grid;
+  grid-template:
+    "a" 1fr
+    "b" auto / 1fr;
+  gap: 1rem;
+  padding: 3rem;
+}
+
+.playerContainer {
+  display: flex;
+  justify-content: space-evenly;
+  background-color: #fff2;
+  border-radius: 10px;
+  padding: 1rem;
+}
