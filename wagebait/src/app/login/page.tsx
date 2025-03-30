@@ -64,24 +64,26 @@ export default function Login() {
 
   return (
     <div className="d-flex flex-column gap-2 justify-content-center align-items-center vh-100">
+      <p className="h1">wagebait</p>
       {loggedIn ? (
         <>
           <div>
             Logged in as <strong>{email}</strong>
           </div>
           <div className="d-flex gap-2">
-            <Link href="/edit" className="btn btn-primary">
+            <Link href="/edit" className="btn btn-primary bg-gradient button-font">
               Edit games
             </Link>
-            <button type="button" className="btn btn-danger" onClick={signout}>
+            <button type="button" className="btn btn-danger bg-gradient button-font" onClick={signout}>
               Logout
             </button>
           </div>
         </>
       ) : (
-        <button type="button" className="btn btn-primary" onClick={signInWithDiscord}>
+        <button type="button" className="btn btn-primary bg-gradient button-font" onClick={signInWithDiscord}>
           Login with Discord
         </button>
+        
       )}
     </div>
   );

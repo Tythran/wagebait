@@ -7,7 +7,7 @@ function App() {
   const avatar = useMemo(() => {
     return createAvatar(openPeeps, {
       seed: seed,
-      size: 128
+      size: 200
     }).toDataUri();
   }, [seed]);
 
