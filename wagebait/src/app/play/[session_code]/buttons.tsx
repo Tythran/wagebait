@@ -13,15 +13,16 @@ import BetModal from './bet.modal';
 export default function Buttons({
   playerID,
   name,
-  bet,
+  totalBet,
   balance,
   turnMode,
-  totalBet,
   call,
   check,
   fold,
   isTurn,
   isFolded,
+  round,
+  turnMode,
 }: {
   playerID: string;
   name: string;
@@ -34,6 +35,8 @@ export default function Buttons({
   fold: () => void;
   isTurn: boolean;
   isFolded: boolean;
+  round: number;
+  turnMode: 'call' | 'check';
 }) {
   const supabase = createClient();
 
@@ -66,32 +69,46 @@ export default function Buttons({
           </span>
         </div>
         <ButtonRow flexGrow={3}>
-          <AnswerButton color="success" onClick={() => handleClick(1)}>
+          <AnswerButton color="success" onClick={() => handleClick(1)} disabled={round !== 3}>
             <i className="bi bi-square" />
           </AnswerButton>
-          <AnswerButton color="danger" onClick={() => handleClick(2)}>
+          <AnswerButton color="danger" onClick={() => handleClick(2)} disabled={round !== 3}>
             <i className="bi bi-circle" />
           </AnswerButton>
         </ButtonRow>
         <ButtonRow flexGrow={3}>
-          <AnswerButton color="warning" onClick={() => handleClick(3)}>
+          <AnswerButton color="warning" onClick={() => handleClick(3)} disabled={round !== 3}>
             <i className="bi bi-triangle" />
           </AnswerButton>
-          <AnswerButton color="info" onClick={() => handleClick(4)}>
+          <AnswerButton color="info" onClick={() => handleClick(4)} disabled={round !== 3}>
             <i className="bi bi-diamond" />
           </AnswerButton>
         </ButtonRow>
         <ButtonRow flexGrow={2}>
-          <ActionButton>Call</ActionButton>
-          <ActionButton>Bet</ActionButton>
-          <ActionButton>Fold</ActionButton>
+          {turnMode === 'call' ? (
+            <button type="button" className={actionClass} onClick={call} disabled={!isTurn || isFolded}>
+              Call
+            </button>
+          ) : (
+            <button type="button" className={actionClass} onClick={check} disabled={!isTurn || isFolded}>
+              Check
+            </button>
+          )}
+          <button
+            type="button"
+            className={actionClass}
+            data-bs-toggle="modal"
+            data-bs-target="#betModal"
+            disabled={!isTurn || isFolded}
+          ></button>
+          <button type="button" className={actionClass} onClick={fold} disabled={!isTurn || isFolded}></button>
         </ButtonRow>
         <div className="row">
-          <Money name="Bet" amount={bet.get} />
+          <Money name="Bet" amount={totalBet.get} />
           <Money name="Balance" amount={balance.get} />
         </div>
       </div>
-      <BetModal />
+      <BetModal maxBet={balance.get} bet={bet} />
     </>
   );
 }

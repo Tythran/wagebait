@@ -231,6 +231,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
       isTurn={isTurn}
       isFolded={isFolded}
       turnMode={turnMode}
+      round={round}
     />
   );
 }
