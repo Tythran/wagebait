@@ -37,7 +37,8 @@ export default function InitPlayer({
       const { data, error } = await supabase
         .from('active_players')
         .select('player_number')
-        .eq('session_code', sessionCode);
+        .eq('session_code', sessionCode)
+        .overrideTypes<Array<{ player_number: number }>>();
       if (error) {
         console.error(error);
       } else {

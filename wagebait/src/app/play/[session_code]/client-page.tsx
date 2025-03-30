@@ -8,6 +8,8 @@ import { createClient } from '@/utils/supabase/client';
 import Buttons from './buttons';
 import InitPlayer from './init-player';
 
+// import type { TablesUpdate } from '@/utils/supabase/database.types';
+
 export default function Client({ sessionCode }: { sessionCode: string }) {
   const supabase = createClient();
 
@@ -15,7 +17,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   activeGamesChannel
     .on(
       'postgres_changes',
-      { event: '*', schema: 'public', table: 'active_games', filter: `session_code=${sessionCode}` },
+      { event: '*', schema: 'public', table: 'active_games', filter: `session_code=eq.${sessionCode}` },
       (payload) => console.log('Change received!', payload)
     )
     .subscribe();
@@ -24,7 +26,9 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   const [playerName, setPlayerName] = useState<string | null>(null);
   const [avatarSeed, setAvatarSeed] = useState<string>(randomString());
   const [bet, setBet] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(0);
+  const [balance, setBalance] = useState<number>(1000);
+
+  // ===================================================================================================================
 
   useEffect(() => {
     if (!playerID) return;
@@ -34,8 +38,21 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
     };
     window.addEventListener('beforeunload', handleBeforeUnload);
     // Clean up the event listener when the component unmounts
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+    // return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [playerID, supabase]);
+
+  // ===================================================================================================================
+
+  // const placeBet = async (bet: number) => {
+  //   const { error } = await supabase
+  //     .from('active_players')
+  //     .update({ turn_bet: bet } satisfies TablesUpdate<'active_players'>)
+  //     .eq('player_id', playerID)
+  //     .select();
+  //   if (error) console.error(error);
+  // };
+
+  // ===================================================================================================================
 
   if (!playerName || !playerID) {
     return (

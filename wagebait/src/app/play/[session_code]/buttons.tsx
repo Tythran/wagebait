@@ -84,7 +84,7 @@ export default function Buttons({
           <Money name="Balance" amount={balance.get} />
         </div>
       </div>
-      <BetModal />
+      <BetModal maxBet={balance.get} />
     </>
   );
 }
