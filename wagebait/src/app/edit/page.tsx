@@ -538,7 +538,10 @@ export default function EditPage() {
         </h4>
         <div className="list-group mt-3">
           {games.map((game) => (
-            <div key={game.game_id} className="mb-2">
+            <div
+              key={game.game_id}
+              className="d-flex align-items-center justify-content-between mb-2 border border-secondary rounded px-2 py-1 w-100"
+            >
               <div className="d-flex align-items-center justify-content-between w-100 border border-secondary rounded px-2 py-1">
                 <Game
                   game={game}
@@ -555,16 +558,11 @@ export default function EditPage() {
                 />
                 {selectedGame?.game_id === game.game_id && (
                   <i
-                    className="bi bi-play-fill text-success rounded bg-light-subtle p-1"
+                    className="bi bi-play-fill text-white bg-success rounded d-flex align-items-center justify-content-center ms-2"
                     role="button"
                     title="Activate Game"
                     onClick={handleActiveGame}
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      textAlign: "center",
-                      lineHeight: "20px",
-                    }}
+                    style={{ width: "32px", height: "32px" }}
                   ></i>
                 )}
               </div>
