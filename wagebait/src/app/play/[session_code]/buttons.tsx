@@ -15,11 +15,25 @@ export default function Buttons({
   name,
   bet,
   balance,
+  turnMode,
+  bet,
+  call,
+  check,
+  fold,
+  isTurn,
+  isFolded,
 }: {
   playerID: string;
   name: string;
   bet: { get: number; set: Dispatch<SetStateAction<number>> };
   balance: { get: number; set: Dispatch<SetStateAction<number>> };
+  turnMode: 'call' | 'check';
+  bet: (n: number) => void;
+  call: () => void;
+  check: () => void;
+  fold: () => void;
+  isTurn: boolean;
+  isFolded: boolean;
 }) {
   const supabase = createClient();
 
