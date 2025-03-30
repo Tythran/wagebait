@@ -12,8 +12,11 @@ export type Database = {
       active_games: {
         Row: {
           betting_pool: number | null
+          blind_player: string | null
+          current_bet: number | null
           current_player: string | null
           game_id: string
+          last_better: string | null
           new_bets: boolean | null
           round_number: number
           session_code: string
@@ -21,8 +24,11 @@ export type Database = {
         }
         Insert: {
           betting_pool?: number | null
+          blind_player?: string | null
+          current_bet?: number | null
           current_player?: string | null
           game_id?: string
+          last_better?: string | null
           new_bets?: boolean | null
           round_number: number
           session_code: string
@@ -30,14 +36,24 @@ export type Database = {
         }
         Update: {
           betting_pool?: number | null
+          blind_player?: string | null
+          current_bet?: number | null
           current_player?: string | null
           game_id?: string
+          last_better?: string | null
           new_bets?: boolean | null
           round_number?: number
           session_code?: string
           start_time?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "active_games_blind_player_fkey"
+            columns: ["blind_player"]
+            isOneToOne: false
+            referencedRelation: "active_players"
+            referencedColumns: ["player_id"]
+          },
           {
             foreignKeyName: "active_games_current_player_fkey"
             columns: ["current_player"]
@@ -52,47 +68,57 @@ export type Database = {
             referencedRelation: "games"
             referencedColumns: ["game_id"]
           },
+          {
+            foreignKeyName: "active_games_LB_fkey"
+            columns: ["last_better"]
+            isOneToOne: false
+            referencedRelation: "active_players"
+            referencedColumns: ["player_id"]
+          },
         ]
       }
       active_players: {
         Row: {
+          acted: boolean | null
           answer_chosen: number | null
           avatar_seed: string | null
           balance: number | null
-          bet: number
           folded: boolean | null
-          last_action: string | null
           player_id: string
           player_name: string | null
           player_number: number
           press_time: string | null
           session_code: string
+          total_bet: number | null
+          turn_bet: number
         }
         Insert: {
+          acted?: boolean | null
           answer_chosen?: number | null
           avatar_seed?: string | null
           balance?: number | null
-          bet: number
           folded?: boolean | null
-          last_action?: string | null
           player_id?: string
           player_name?: string | null
           player_number: number
           press_time?: string | null
           session_code: string
+          total_bet?: number | null
+          turn_bet: number
         }
         Update: {
+          acted?: boolean | null
           answer_chosen?: number | null
           avatar_seed?: string | null
           balance?: number | null
-          bet?: number
           folded?: boolean | null
-          last_action?: string | null
           player_id?: string
           player_name?: string | null
           player_number?: number
           press_time?: string | null
           session_code?: string
+          total_bet?: number | null
+          turn_bet?: number
         }
         Relationships: [
           {
