@@ -4,6 +4,10 @@ import Money from './buttons.money';
 import ButtonRow from './buttons.row';
 
 export default function Buttons({ name }: { name: string }) {
+  // const handleClick = (option: number) => {
+  //   console.log(option);
+  // };
+
   return (
     <div className="d-flex flex-column gap-3" style={{ height: '100%' }}>
       <div className="row">
