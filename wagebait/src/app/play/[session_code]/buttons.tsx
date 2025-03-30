@@ -8,7 +8,7 @@ import Money from './buttons.money';
 import ButtonRow from './buttons.row';
 import type { TablesUpdate } from '@/utils/supabase/database.types';
 import type { Dispatch, SetStateAction } from 'react';
-import BetModal from './bet.modal';
+import BetModal from './bet-modal';
 
 export default function Buttons({
   playerID,
