@@ -1,26 +1,41 @@
 import React, { useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+
+interface GameType {
+  game_id: string;
+  game_title: string;
+  created_by?: string;
+}
 
 interface GameProps {
-  game: { id: string; title: string };
+  game: GameType;
   onEdit: () => void;
   onDelete: () => void;
   onRename: (newTitle: string) => void;
   isActive: boolean;
 }
 
-export default function Game({
-  game,
-  onEdit,
-  onDelete,
-  onRename,
-  isActive,
-}: GameProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [title, setTitle] = useState(game.title);
+const updateGame = async (id: string, newTitle: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("games")
+    .update({ game_title: newTitle })
+    .eq("game_id", id);
+  if (error) {
+    console.error("Error updating game:", error);
+  }
+  return data;
+};
 
-  const handleSave = () => {
+export default function Game({ game, onEdit, onDelete, onRename, isActive }: GameProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState(game.game_title);
+ 
+
+  const handleSave = async () => {
     const trimmed = title.trim();
-    if (trimmed && trimmed !== game.title) {
+    if (trimmed && trimmed !== game.game_title) {
+      await updateGame(game.game_id, trimmed);
       onRename(trimmed);
     }
     setIsEditing(false);
@@ -43,12 +58,8 @@ export default function Game({
           autoFocus
         />
       ) : (
-        <span
-          className="fw-semibold flex-grow-1 me-2"
-          role="button"
-          onClick={onEdit}
-        >
-          {game.title}
+        <span className="fw-semibold flex-grow-1 me-2" role="button" onClick={onEdit}>
+          {game.game_title}
         </span>
       )}
       <i
