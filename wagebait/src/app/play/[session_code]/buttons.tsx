@@ -16,7 +16,7 @@ export default function Buttons({
   bet,
   balance,
   turnMode,
-  bet,
+  totalBet,
   call,
   check,
   fold,
@@ -25,7 +25,7 @@ export default function Buttons({
 }: {
   playerID: string;
   name: string;
-  bet: { get: number; set: Dispatch<SetStateAction<number>> };
+  totalBet: { get: number; set: Dispatch<SetStateAction<number>> };
   balance: { get: number; set: Dispatch<SetStateAction<number>> };
   turnMode: 'call' | 'check';
   bet: (n: number) => void;

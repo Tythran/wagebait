@@ -7,6 +7,7 @@ import { createClient } from '@/utils/supabase/client';
 
 import Buttons from './buttons';
 import InitPlayer from './init-player';
+import type { Tables, TablesUpdate } from '@/utils/supabase/database.types';
 
 export default function Client({ sessionCode }: { sessionCode: string }) {
   const supabase = createClient();
@@ -16,7 +17,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'active_games', filter: `session_code=${sessionCode}` },
-      (payload) => console.log('Change received!', payload)
+      (payload) => handleGameUpdate(payload.new as Tables<'active_games'>)
     )
     .subscribe();
 
@@ -39,7 +40,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   const [playerID, setPlayerID] = useState<string | null>(null);
   const [playerName, setPlayerName] = useState<string | null>(null);
   const [avatarSeed, setAvatarSeed] = useState<string>(randomString());
-  const [bet, setBet] = useState<number>(0);
+  const [totalBet, setTotalBet] = useState<number>(0);
   const [balance, setBalance] = useState<number>(1000);
 
   // ===================================================================================================================
@@ -211,7 +212,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
         playerID={{ get: playerID, set: setPlayerID }}
         playerName={{ get: playerName, set: setPlayerName }}
         avatarSeed={{ get: avatarSeed, set: setAvatarSeed }}
-        bet={{ get: bet, set: setBet }}
+        bet={{ get: totalBet, set: setTotalBet }}
         balance={{ get: balance, set: setBalance }}
       />
     );
@@ -221,7 +222,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
     <Buttons
       playerID={playerID}
       name={playerName}
-      bet={{ get: bet, set: setBet }}
+      totalBet={{ get: totalBet, set: setTotalBet }}
       balance={{ get: balance, set: setBalance }}
       check={check}
       call={call}
