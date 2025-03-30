@@ -2,13 +2,12 @@
 
 import { createClient } from '@/utils/supabase/client';
 
-import ActionButton from './buttons.action';
 import AnswerButton from './buttons.answer';
 import Money from './buttons.money';
 import ButtonRow from './buttons.row';
 import type { TablesUpdate } from '@/utils/supabase/database.types';
 import type { Dispatch, SetStateAction } from 'react';
-import BetModal from './bet.modal';
+import BetModal from './bet-modal';
 
 export default function Buttons({
   playerID,
@@ -17,12 +16,12 @@ export default function Buttons({
   balance,
   turnMode,
   call,
+  bet,
   check,
   fold,
   isTurn,
   isFolded,
   round,
-  turnMode,
 }: {
   playerID: string;
   name: string;
@@ -36,9 +35,11 @@ export default function Buttons({
   isTurn: boolean;
   isFolded: boolean;
   round: number;
-  turnMode: 'call' | 'check';
 }) {
   const supabase = createClient();
+
+  const actionClass = `btn btn-secondary flex-grow-1`;
+  const actionStyle = { fontSize: '2rem' };
 
   const handleClick = async (option: number) => {
     const { error } = await supabase
@@ -86,11 +87,23 @@ export default function Buttons({
         </ButtonRow>
         <ButtonRow flexGrow={2}>
           {turnMode === 'call' ? (
-            <button type="button" className={actionClass} onClick={call} disabled={!isTurn || isFolded}>
+            <button
+              type="button"
+              className={actionClass}
+              style={actionStyle}
+              onClick={call}
+              disabled={!isTurn || isFolded}
+            >
               Call
             </button>
           ) : (
-            <button type="button" className={actionClass} onClick={check} disabled={!isTurn || isFolded}>
+            <button
+              type="button"
+              className={actionClass}
+              style={actionStyle}
+              onClick={check}
+              disabled={!isTurn || isFolded}
+            >
               Check
             </button>
           )}
@@ -100,8 +113,19 @@ export default function Buttons({
             data-bs-toggle="modal"
             data-bs-target="#betModal"
             disabled={!isTurn || isFolded}
-          ></button>
-          <button type="button" className={actionClass} onClick={fold} disabled={!isTurn || isFolded}></button>
+            style={actionStyle}
+          >
+            Bet
+          </button>
+          <button
+            type="button"
+            className={actionClass}
+            style={actionStyle}
+            onClick={fold}
+            disabled={!isTurn || isFolded}
+          >
+            Fold
+          </button>
         </ButtonRow>
         <div className="row">
           <Money name="Bet" amount={totalBet.get} />
