@@ -18,6 +18,8 @@ export default function HostClient({ session_code }: { session_code: string }) {
   const [categories, setCategories] = useState<Tables<'category'>[] | null>(null);
   const [questions, setQuestions] = useState<Tables<'question'>[] | null>(null);
 
+  // const [round, setRound] = useState(0);
+
   useEffect(() => {
     const fetchPlayers = async () => {
       const { data, error } = (await supabase
@@ -68,6 +70,46 @@ export default function HostClient({ session_code }: { session_code: string }) {
     };
     fetchQuestions();
   }, [categories, supabase]);
+
+  // ===================================================================================================================
+
+  const newPlayers = supabase.channel('player-insert-channel');
+  newPlayers
+    .on(
+      'postgres_changes',
+      { event: 'INSERT', schema: 'public', table: 'active_players', filter: `session_code=eq.${session_code}` },
+      (payload) => players?.push(payload.new as Tables<'active_players'>)
+    )
+    .subscribe();
+
+  const playerExit = supabase.channel('player-delete-channel');
+  playerExit
+    .on(
+      'postgres_changes',
+      { event: 'DELETE', schema: 'public', table: 'active_players', filter: `session_code=eq.${session_code}` },
+      (payload) => {
+        const playerId = payload.old.player_id;
+        setPlayers((prevPlayers) => prevPlayers?.filter((player) => player.player_id !== playerId) || []);
+      }
+    )
+    .subscribe();
+
+  // ===================================================================================================================
+
+  useEffect(() => {
+    const init = async () => {
+      const { error } = await supabase
+        .from('active_games')
+        .update({ current_player: players?.filter((player) => player.player_number === 1).at(0)?.player_id })
+        .eq('session_code', session_code);
+      if (error) {
+        console.error('Error inserting player:', error);
+      }
+    };
+    init();
+  }, [players, session_code, supabase]);
+
+  // ===================================================================================================================
 
   const shuffledQuestions = questions?.sort(() => Math.random() - 0.5) || [];
   console.log(shuffledQuestions);

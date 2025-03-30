@@ -16,7 +16,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   activeGamesChannel
     .on(
       'postgres_changes',
-      { event: '*', schema: 'public', table: 'active_games', filter: `session_code=${sessionCode}` },
+      { event: '*', schema: 'public', table: 'active_games', filter: `session_code=eq.${sessionCode}` },
       (payload) => handleGameUpdate(payload.new as Tables<'active_games'>)
     )
     .subscribe();
@@ -46,6 +46,8 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   // ===================================================================================================================
 
   const handleGameUpdate = (newState: Tables<'active_games'>) => {
+    console.log('Game state updated:', newState);
+
     setCurrentBet(newState.current_bet);
     setLastBetter(newState.last_better);
     setNewBets(newState.new_bets ?? false);
@@ -94,6 +96,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
         new_bets: true,
         current_player: await nextPlayer(),
         current_bet: bet,
+        betting_pool: totalBet + bet,
       } satisfies TablesUpdate<'active_games'>)
       .eq('session_code', sessionCode);
     if (gameError) console.error('Error updating row in active_games', gameError);
@@ -130,6 +133,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
       .from('active_games')
       .update({
         current_player: await nextPlayer(),
+        betting_pool: totalBet + bet,
       } satisfies TablesUpdate<'active_games'>)
       .eq('session_code', sessionCode);
     if (gameError) console.error('Error updating row in active_games', gameError);
@@ -148,6 +152,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
         new_bets: true,
         current_player: await nextPlayer(),
         current_bet: totalBet + bet,
+        betting_pool: totalBet + bet,
       } satisfies TablesUpdate<'active_games'>)
       .eq('session_code', sessionCode);
     if (gameError) console.error('Error updating row in active_games', gameError);
