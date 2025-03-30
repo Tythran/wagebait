@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container * {
+  min-width: 0;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bet {
+  background-color: #84c;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  max-width: 140px;
+  padding: 0 0.5rem;
+}
+
+.name {
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+  font-weight: 300;
+  background-color: rgb(49, 11, 40);
+  padding: 0.5rem;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.avatar {
+  background-color: #9f85b9;
+  flex-grow: 1;
+}
+
+.balance {
+  font-weight: bold;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+  background-color: rgb(49, 11, 40);
+  padding: 0.5rem;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
