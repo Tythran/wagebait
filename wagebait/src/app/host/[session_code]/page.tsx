@@ -1,9 +1,11 @@
 import { ErrorBoundary } from 'react-error-boundary';
 
+import { createClient } from '@/utils/supabase/client';
+
 import styles from './page.module.css';
 import Player from './player';
 import QuestionDisplay from './questiondisplay';
-import { createClient } from '@/utils/supabase/client';
+
 const supabase = createClient();
 
 export default async function Host({ params }: { params: Promise<{ session_code: string }> }) {
@@ -11,49 +13,40 @@ export default async function Host({ params }: { params: Promise<{ session_code:
   console.log(session_code);
 
   const fetchPlayers = async () => {
-    const { data, error } = await supabase
-      .from('players')
-      .select('*')
-      .eq('session_code', session_code);
+    const { data, error } = await supabase.from('players').select('*').eq('session_code', session_code);
     if (error) {
       console.error('Error fetching players:', error);
     }
-    return data || [];
+    return data ?? [];
   };
 
   const players = await fetchPlayers();
   const fetchCurrentGame = async () => {
-    const { data, error } = await supabase
-      .from('active_games')
-      .select('*')
-      .eq('session_code', session_code)
-      .single();
+    const { data, error } = await supabase.from('active_games').select('*').eq('session_code', session_code).single();
     if (error) {
       console.error('Error fetching current game:', error);
     }
-    return data || null;
-  }
-
+    return data;
+  };
 
   const currentGame = await fetchCurrentGame();
   const fetchCategories = async () => {
-    const { data, error } = await supabase
-      .from('category').select('*')
-      .eq('game_id', currentGame?.game_id);
+    const { data, error } = await supabase.from('category').select('*').eq('game_id', currentGame?.game_id);
     if (error) {
       console.error('Error fetching categories:', error);
     }
-    return data || null;
+    return data;
   };
   const categories = await fetchCategories();
   const fetchQuestions = async () => {
     const { data, error } = await supabase
-      .from('question').select('*')
+      .from('question')
+      .select('*')
       .in('category_id', categories?.map((category) => category.id) || []);
     if (error) {
       console.error('Error fetching questions:', error);
     }
-    return data || null;
+    return data;
   };
   const questions = await fetchQuestions();
 
@@ -84,8 +77,6 @@ export default async function Host({ params }: { params: Promise<{ session_code:
   const currentQuestion = handleCurrentQuestion();
   console.log('Current Question:', currentQuestion);
   console.log('next Question:', handleNextQuestion());
-
-
 
   return (
     <>

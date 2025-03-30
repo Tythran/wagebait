@@ -23,6 +23,7 @@ export default function Buttons({
   fold,
   isTurn,
   isFolded,
+  round,
 }: {
   playerID: string;
   name: string;
@@ -35,6 +36,7 @@ export default function Buttons({
   fold: () => void;
   isTurn: boolean;
   isFolded: boolean;
+  round: number;
 }) {
   const supabase = createClient();
 
@@ -67,18 +69,18 @@ export default function Buttons({
           </span>
         </div>
         <ButtonRow flexGrow={3}>
-          <AnswerButton color="success" onClick={() => handleClick(1)}>
+          <AnswerButton color="success" onClick={() => handleClick(1)} disabled={round !== 3}>
             <i className="bi bi-square" />
           </AnswerButton>
-          <AnswerButton color="danger" onClick={() => handleClick(2)}>
+          <AnswerButton color="danger" onClick={() => handleClick(2)} disabled={round !== 3}>
             <i className="bi bi-circle" />
           </AnswerButton>
         </ButtonRow>
         <ButtonRow flexGrow={3}>
-          <AnswerButton color="warning" onClick={() => handleClick(3)}>
+          <AnswerButton color="warning" onClick={() => handleClick(3)} disabled={round !== 3}>
             <i className="bi bi-triangle" />
           </AnswerButton>
-          <AnswerButton color="info" onClick={() => handleClick(4)}>
+          <AnswerButton color="info" onClick={() => handleClick(4)} disabled={round !== 3}>
             <i className="bi bi-diamond" />
           </AnswerButton>
         </ButtonRow>

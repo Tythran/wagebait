@@ -30,6 +30,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   const [lastBetter, setLastBetter] = useState<string | null>(null);
   const [newBets, setNewBets] = useState<boolean>(false);
   const [round, setRound] = useState<number>(0);
+  const [bettingPool, setBettingPool] = useState<number>(0);
 
   // player state
   const [isTurn, setIsTurn] = useState<boolean>(false);
@@ -51,6 +52,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
     setCurrentBet(newState.current_bet);
     setLastBetter(newState.last_better);
     setNewBets(newState.new_bets ?? false);
+    setBettingPool(newState.betting_pool ?? 0);
 
     if (round !== newState.round_number) {
       setRound(newState.round_number);
@@ -127,14 +129,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
     setBalance((prev) => prev - bet);
 
     updatePlayer(bet);
-
-    const { error: gameError } = await supabase
-      .from('active_games')
-      .update({
-        current_player: await nextPlayer(),
-      } satisfies TablesUpdate<'active_games'>)
-      .eq('session_code', sessionCode);
-    if (gameError) console.error('Error updating row in active_games', gameError);
+    updateGame({}, bet);
   };
 
   const bet = async (bet: number) => {
@@ -143,16 +138,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
     setBalance((prev) => prev - bet);
 
     updatePlayer(bet);
-
-    const { error: gameError } = await supabase
-      .from('active_games')
-      .update({
-        new_bets: true,
-        current_player: await nextPlayer(),
-        current_bet: totalBet + bet,
-      } satisfies TablesUpdate<'active_games'>)
-      .eq('session_code', sessionCode);
-    if (gameError) console.error('Error updating row in active_games', gameError);
+    updateGame({ new_bets: true }, bet);
   };
 
   const fold = async () => {
@@ -166,14 +152,10 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
       .eq('player_id', playerID);
     if (playerError) console.error('Error updating row in active_players', playerError);
 
-    const { error: gameError } = await supabase
-      .from('active_games')
-      .update({
-        current_player: await nextPlayer(),
-      } satisfies TablesUpdate<'active_games'>)
-      .eq('session_code', sessionCode);
-    if (gameError) console.error('Error updating row in active_games', gameError);
+    updateGame();
   };
+
+  // ===================================================================================================================
 
   const updatePlayer = async (bet: number) => {
     const { error: playerError } = await supabase
@@ -187,6 +169,20 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
       .select();
     if (playerError) console.error('Error updating row in active_players', playerError);
   };
+
+  const updateGame = async (obj?: TablesUpdate<'active_games'>, totalBet?: number) => {
+    const { error: gameError } = await supabase
+      .from('active_games')
+      .update({
+        ...obj,
+        current_player: await nextPlayer(),
+        betting_pool: bettingPool + (totalBet ?? 0),
+      } satisfies TablesUpdate<'active_games'>)
+      .eq('session_code', sessionCode);
+    if (gameError) console.error('Error updating row in active_games', gameError);
+  };
+
+  // ===================================================================================================================
 
   const nextPlayer = async (): Promise<string | null> => {
     const { data: playerNumbers, error: fetchPlayersError } = await supabase
@@ -234,6 +230,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
       isTurn={isTurn}
       isFolded={isFolded}
       turnMode={turnMode}
+      round={round}
     />
   );
 }
