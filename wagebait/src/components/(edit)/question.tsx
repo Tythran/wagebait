@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { QuestionData } from "../../app/edit/page";  
+import { QuestionData } from "../../app/edit/page";
 
 interface Props {
   questionData: QuestionData;
@@ -18,18 +18,24 @@ export default function Question({ questionData, onChange, onDelete }: Props) {
 
   const style = { transform: CSS.Transform.toString(transform), transition };
 
+  const options = [
+    { text: questionData.option_1, isCorrect: questionData.correct_1 },
+    { text: questionData.option_2, isCorrect: questionData.correct_2 },
+    { text: questionData.option_3, isCorrect: questionData.correct_3 },
+    { text: questionData.option_4, isCorrect: questionData.correct_4 },
+  ];
+
   const handleOptionChange = (index: number, value: string) => {
-    const options = [...questionData.options];
-    options[index] = value;
-    onChange({ ...questionData, options });
+    const updatedOptionKey = `option_${index + 1}`;
+    onChange({ ...questionData, [updatedOptionKey]: value });
   };
 
   const toggleCorrect = (index: number) => {
-    const isAlready = questionData.correct.includes(index);
-    const correct = isAlready
-      ? questionData.correct.filter((i) => i !== index)
-      : [...questionData.correct, index];
-    onChange({ ...questionData, correct });
+    const updatedCorrectKey = `correct_${index + 1}`;
+    onChange({
+      ...questionData,
+      [updatedCorrectKey]: !questionData[updatedCorrectKey as keyof QuestionData],
+    });
   };
 
   return (
@@ -64,13 +70,13 @@ export default function Question({ questionData, onChange, onDelete }: Props) {
         }
         disabled={!isEditing}
       />
-      {questionData.options.map((opt, i) => (
+      {options.map((opt, i) => (
         <div className="input-group mb-1" key={i}>
           <div className="input-group-text bg-dark border-secondary">
             <input
               type="checkbox"
               className="form-check-input mt-0 cursor-pointer"
-              checked={questionData.correct.includes(i)}
+              checked={opt.isCorrect}
               onChange={() => toggleCorrect(i)}
               disabled={!isEditing}
             />
@@ -78,7 +84,7 @@ export default function Question({ questionData, onChange, onDelete }: Props) {
           <input
             type="text"
             className="form-control bg-dark text-light border-secondary focus-ring"
-            value={opt || ""}
+            value={opt.text || ""}
             placeholder={`Option ${i + 1}`}
             onChange={(e) => handleOptionChange(i, e.target.value)}
             disabled={!isEditing}

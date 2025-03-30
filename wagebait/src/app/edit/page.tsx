@@ -11,7 +11,6 @@ import {
 } from "@dnd-kit/sortable";
 import { createClient } from "@/utils/supabase/client";
 import { randomString } from "@/components/utils";
-import { useRouter } from "next/navigation";
 const supabase = createClient();
 
 interface Game {
@@ -28,65 +27,67 @@ export interface QuestionData {
   question_id: string;
   category_id: string;
   question_text: string;
-  options: string[];
-  correct: number[];
+  option_1: string;
+  option_2: string;
+  option_3: string;
+  option_4: string;
+  correct_1: boolean;
+  correct_2: boolean;
+  correct_3: boolean;
+  correct_4: boolean;
 }
+
 
 export default function EditPage() {
   const [games, setGames] = useState<Game[]>([]);
-  const [categoriesByGame, setCategoriesByGame] = useState<{
-    [key: string]: Category[];
-  }>({});
-  const [questionsByCategory, setQuestionsByCategory] = useState<{
-    [key: string]: QuestionData[];
-  }>({});
+  const [categoriesByGame, setCategoriesByGame] = useState<{ [key: string]: Category[] }>({});
+  const [questionsByCategory, setQuestionsByCategory] = useState<{ [key: string]: QuestionData[] }>({});
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [editedCategoryName, setEditedCategoryName] = useState<string>("");
 
   const [userId, setUserId] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const fetchUserAndData = async () => {
       try {
-        const { data: userData, error: userError } =
-          await supabase.auth.getUser();
+
+        const { data: userData, error: userError } = await supabase.auth.getUser();
         if (userError) {
           console.error("Error fetching user:", userError);
           return;
         }
-
+  
         const currentUserId = userData?.user?.id || null;
-        setUserId(currentUserId);
-
+        setUserId(currentUserId); 
+  
         if (!currentUserId) {
           console.warn("User ID not found. Skipping games fetch.");
           return;
         }
+  
 
         const { data: gamesData, error: gamesError } = await supabase
           .from("games")
           .select("*")
           .eq("created_by", currentUserId);
-
+  
         if (gamesError) {
           console.error("Error fetching games:", gamesError);
           return;
         }
-
+  
         setGames(gamesData || []);
         console.log("Games fetched successfully!", gamesData);
+  
 
-        const { data: categoriesData, error: categoriesError } = await supabase
-          .from("category")
-          .select("*");
+        const { data: categoriesData, error: categoriesError } = await supabase.from("category").select("*");
         if (categoriesError) {
           console.error("Error fetching categories:", categoriesError);
           return;
         }
-
+  
         const catByGame: { [key: string]: Category[] } = {};
         (categoriesData || []).forEach((cat: Category) => {
           if (!catByGame[cat.game_id]) {
@@ -95,28 +96,33 @@ export default function EditPage() {
           catByGame[cat.game_id].push(cat);
         });
         setCategoriesByGame(catByGame);
+  
 
-        const { data: questionsData, error: questionsError } = await supabase
-          .from("question")
-          .select("*");
+        const { data: questionsData, error: questionsError } = await supabase.from("question").select("*");
         if (questionsError) {
           console.error("Error fetching questions:", questionsError);
           return;
         }
-
+  
         const questByCat: { [key: string]: QuestionData[] } = {};
         (questionsData || []).forEach((q: QuestionData) => {
           const catId = q.category_id;
           if (!questByCat[catId]) {
             questByCat[catId] = [];
           }
-          questByCat[catId].push({
+            questByCat[catId].push({
             question_id: q.question_id,
             category_id: q.category_id,
             question_text: q.question_text ?? "",
-            options: q.options || ["", "", "", ""],
-            correct: q.correct || [],
-          });
+            option_1: q.option_1 ?? "",
+            option_2: q.option_2 ?? "",
+            option_3: q.option_3 ?? "",
+            option_4: q.option_4 ?? "",
+            correct_1: q.correct_1,
+            correct_2: q.correct_2,
+            correct_3: q.correct_3,
+            correct_4: q.correct_4,
+            });
         });
         setQuestionsByCategory(questByCat);
         console.log("Questions fetched successfully!");
@@ -124,13 +130,14 @@ export default function EditPage() {
         console.error("Unexpected error fetching data:", exception);
       }
     };
-
+  
     fetchUserAndData();
   }, []);
 
   const handleAddGame = async () => {
     const defaultTitle = "new game";
     try {
+
       if (!userId) {
         console.error("User not authenticated.");
         return;
@@ -146,10 +153,8 @@ export default function EditPage() {
       }
       console.log("Game added successfully!");
 
-      const { data: updatedGames, error: fetchError } = await supabase
-        .from("games")
-        .select("*")
-        .eq("created_by", userId);
+
+      const { data: updatedGames, error: fetchError } = await supabase.from("games").select("*").eq("created_by", userId);
       if (fetchError) {
         console.error("Error fetching updated games:", fetchError);
         return;
@@ -157,8 +162,7 @@ export default function EditPage() {
       setGames(updatedGames || []);
     } catch (exception) {
       console.error("Unexpected error adding game:", exception);
-    }
-  };
+    }}
 
   const handleRenameGame = async (gameId: string, newTitle: string) => {
     try {
@@ -185,9 +189,7 @@ export default function EditPage() {
       setGames(updatedGames || []);
 
       if (selectedGame && selectedGame.game_id === gameId) {
-        const updatedGame = updatedGames.find(
-          (game: Game) => game.game_id === gameId
-        );
+        const updatedGame = updatedGames.find((game: Game) => game.game_id === gameId);
         setSelectedGame(updatedGame);
       }
     } catch (exception) {
@@ -196,10 +198,8 @@ export default function EditPage() {
   };
   const handleDeleteGame = async (gameId: string) => {
     try {
-      const { error } = await supabase
-        .from("games")
-        .delete()
-        .eq("game_id", gameId);
+
+      const { error } = await supabase.from("games").delete().eq("game_id", gameId);
       if (error) {
         console.error("Error deleting game:", error);
         return;
@@ -209,8 +209,8 @@ export default function EditPage() {
       const { data: updatedGames, error: fetchError } = await supabase
         .from("games")
         .select("*")
-        .eq("created_by", userId);
-
+        .eq("created_by", userId); 
+  
       if (fetchError) {
         console.error("Error fetching updated games:", fetchError);
         return;
@@ -221,7 +221,8 @@ export default function EditPage() {
         setSelectedGame(null);
         setActiveCategory("");
       }
-
+  
+      
       const updatedCategories = { ...categoriesByGame };
       delete updatedCategories[gameId];
       setCategoriesByGame(updatedCategories);
@@ -229,47 +230,51 @@ export default function EditPage() {
       console.error("Unexpected error deleting game:", exception);
     }
   };
+  
+
+
 
   const handleAddCategory = async (categoryName: string) => {
-    if (!categoryName || typeof categoryName !== "string") {
-      console.error("Invalid category name");
+    if (!categoryName || typeof categoryName !== 'string') {
+      console.error('Invalid category name');
       return;
     }
-
+  
     try {
-      const { error } = await supabase.from("category").insert({
-        category_name: categoryName,
-        game_id: selectedGame?.game_id,
-      });
 
+      const { error } = await supabase.from('category').insert({
+        category_name: categoryName,
+        game_id: selectedGame?.game_id, 
+      });
+  
       if (error) {
-        console.error("Error adding category:", error);
+        console.error('Error adding category:', error);
         return;
       }
-
-      console.log("Category added successfully!");
+  
+      console.log('Category added successfully!');
 
       if (selectedGame) {
         const { data: updatedCategories, error: fetchError } = await supabase
-          .from("category")
-          .select("*")
-          .eq("game_id", selectedGame.game_id);
-
+          .from('category')
+          .select('*')
+          .eq('game_id', selectedGame.game_id);
+  
         if (fetchError) {
-          console.error("Error fetching updated categories:", fetchError);
+          console.error('Error fetching updated categories:', fetchError);
           return;
         }
-
+  
         setCategoriesByGame((prev) => ({
           ...prev,
           [selectedGame.game_id]: updatedCategories,
         }));
       }
     } catch (exception) {
-      console.error("Unexpected error adding category:", exception);
+      console.error('Unexpected error adding category:', exception);
     }
   };
-
+  
   const handleRenameCategory = async () => {
     if (!selectedGame || !editingCategory || !editedCategoryName) {
       console.error("Invalid category rename operation!");
@@ -280,18 +285,14 @@ export default function EditPage() {
         .from("category")
         .update({ category_name: editedCategoryName })
         .eq("category_id", editingCategory);
-
+  
       if (error) {
         console.error("Error renaming category:", error);
         return;
       }
 
-      const updatedCategories = (
-        categoriesByGame[selectedGame.game_id] || []
-      ).map((cat) =>
-        cat.category_id === editingCategory
-          ? { ...cat, category_name: editedCategoryName }
-          : cat
+      const updatedCategories = (categoriesByGame[selectedGame.game_id] || []).map((cat) =>
+        cat.category_id === editingCategory ? { ...cat, category_name: editedCategoryName } : cat
       );
       setCategoriesByGame({
         ...categoriesByGame,
@@ -314,15 +315,15 @@ export default function EditPage() {
         .from("category")
         .delete()
         .eq("category_id", categoryId);
-
+  
       if (error) {
         console.error("Error deleting category:", error);
         return;
       }
 
-      const updatedCategories = (
-        categoriesByGame[selectedGame.game_id] || []
-      ).filter((cat) => cat.category_id !== categoryId);
+      const updatedCategories = (categoriesByGame[selectedGame.game_id] || []).filter(
+        (cat) => cat.category_id !== categoryId
+      );
       setCategoriesByGame({
         ...categoriesByGame,
         [selectedGame.game_id]: updatedCategories,
@@ -332,86 +333,73 @@ export default function EditPage() {
       console.error("Unexpected error deleting category:", exception);
     }
   };
-
+    
   const handleAddQuestion = async (questionData: QuestionData) => {
     if (!activeCategory) {
-      console.error("No active category selected.");
+      console.error('No active category selected.');
       return;
     }
-
+  
     try {
-      const { error } = await supabase.from("question").insert({
+
+      const { error } = await supabase.from('question').insert({
         category_id: activeCategory,
         question_text: questionData.question_text,
-        option_1: "",
-        option_2: "",
-        option_3: "",
-        option_4: "",
+        option_1: '',
+        option_2: '',
+        option_3: '',
+        option_4: '',
         correct_1: false,
         correct_2: false,
         correct_3: false,
         correct_4: false,
       });
-
+  
       if (error) {
-        console.error("Error adding question:", error);
+        console.error('Error adding question:', error);
         return;
       }
-
-      console.log("Question added successfully!");
+  
+      console.log('Question added successfully!');
 
       const { data: updatedQuestions, error: fetchError } = await supabase
-        .from("question")
-        .select("*")
-        .eq("category_id", activeCategory);
-
+        .from('question')
+        .select('*')
+        .eq('category_id', activeCategory);
+  
       if (fetchError) {
-        console.error("Error fetching updated questions:", fetchError);
+        console.error('Error fetching updated questions:', fetchError);
         return;
       }
 
-      const transformedQuestions: QuestionData[] = (updatedQuestions || []).map(
-        (q: {
-          question_id: string;
-          category_id: string;
-          question_text?: string;
-          option_1?: string;
-          option_2?: string;
-          option_3?: string;
-          option_4?: string;
-          correct_1?: boolean;
-          correct_2?: boolean;
-          correct_3?: boolean;
-          correct_4?: boolean;
-        }) => ({
-          question_id: q.question_id,
-          category_id: q.category_id,
-          question_text: q.question_text ?? "",
-          options: [
-            q.option_1 ?? "",
-            q.option_2 ?? "",
-            q.option_3 ?? "",
-            q.option_4 ?? "",
-          ],
-          correct: [
-            ...(q.correct_1 ? [0] : []),
-            ...(q.correct_2 ? [1] : []),
-            ...(q.correct_3 ? [2] : []),
-            ...(q.correct_4 ? [3] : []),
-          ],
-        })
-      );
+      const transformedQuestions: QuestionData[] = (updatedQuestions || []).map((q: { question_id: string; category_id: string; question_text?: string; option_1?: string; option_2?: string; option_3?: string; option_4?: string; correct_1?: boolean; correct_2?: boolean; correct_3?: boolean; correct_4?: boolean; }) => ({
+        question_id: q.question_id,
+        category_id: q.category_id,
+        question_text: q.question_text ?? "",
+        option_1: q.option_1 ?? "",
+        option_2: q.option_2 ?? "",
+        option_3: q.option_3 ?? "",
+        option_4: q.option_4 ?? "",
+        correct_1: q.correct_1 ?? false,
+        correct_2: q.correct_2 ?? false,
+        correct_3: q.correct_3 ?? false,
+        correct_4: q.correct_4 ?? false,
+      }));
 
       setQuestionsByCategory({
         ...questionsByCategory,
         [activeCategory]: transformedQuestions,
       });
     } catch (exception) {
-      console.error("Unexpected error adding question:", exception);
+      console.error('Unexpected error adding question:', exception);
     }
   };
-
+  
+  
+  
+  
   const handleUpdateQuestion = async (updatedQuestion: QuestionData) => {
+
     if (!selectedGame || !activeCategory) {
       console.error("Error: No game or category selected!");
       return;
@@ -421,17 +409,17 @@ export default function EditPage() {
       .from("question")
       .update({
         question_text: updatedQuestion.question_text,
-        option_1: updatedQuestion.options[0],
-        option_2: updatedQuestion.options[1],
-        option_3: updatedQuestion.options[2],
-        option_4: updatedQuestion.options[3],
-        correct_1: updatedQuestion.correct.includes(0),
-        correct_2: updatedQuestion.correct.includes(1),
-        correct_3: updatedQuestion.correct.includes(2),
-        correct_4: updatedQuestion.correct.includes(3),
+        option_1: updatedQuestion.option_1,
+        option_2: updatedQuestion.option_2,
+        option_3: updatedQuestion.option_3,
+        option_4: updatedQuestion.option_4,
+        correct_1: updatedQuestion.correct_1 || false,
+        correct_2: updatedQuestion.correct_2 || false,
+        correct_3: updatedQuestion.correct_3 || false,
+        correct_4: updatedQuestion.correct_4 || false,
       })
       .eq("question_id", updatedQuestion.question_id);
-
+  
     if (error) {
       console.error("Error updating question:", error);
       return;
@@ -448,20 +436,23 @@ export default function EditPage() {
   };
 
   const handleDeleteQuestion = async (questionId: string) => {
+
     if (!selectedGame || !activeCategory) {
       console.error("Error: No game or category selected!");
       return;
     }
+  
 
     const { error } = await supabase
       .from("question")
       .delete()
       .eq("question_id", questionId);
-
+  
     if (error) {
       console.error("Error deleting question:", error);
       return;
     }
+  
 
     setQuestionsByCategory((prev) => {
       const updatedQuestions = prev[activeCategory].filter(
@@ -470,6 +461,7 @@ export default function EditPage() {
       return { ...prev, [activeCategory]: updatedQuestions };
     });
   };
+  
 
   const handleDragEnd = (event: import("@dnd-kit/core").DragEndEvent) => {
     const { active, over } = event;
@@ -489,29 +481,21 @@ export default function EditPage() {
   const currentCategoryQuestions = questionsByCategory[activeCategory] || [];
 
   const handleActiveGame = async () => {
-    const sessionCode = randomString();
-    const { error } = await supabase.from("active_games").insert({
-      session_code: sessionCode,
-      game_id: selectedGame?.game_id,
-      start_time: new Date().toISOString(),
-      round_number: 1,
-    });
-
-    if (error) {
-      console.error("Error activating game:", error);
-    } else {
-      console.log("Game activated successfully!");
-      router.push(`/host/${sessionCode}`);
-    }
+      const sessionCode = randomString();
+      const { error } = await supabase
+        .from("active_games")
+        .insert({ session_code: sessionCode, game_id: selectedGame?.game_id, start_time: new Date().toISOString(), round_number: 1 });
+  
+      if (error) {
+          console.error("Error activating game:", error);
+      } else {
+          console.log("Game activated successfully!");
+      }
   };
-
   return (
     <div className="d-flex vh-100 bg-dark text-light animate__animated animate__fadeIn">
       {/* Sidebar for Games */}
-      <div
-        className="border-end border-secondary p-3"
-        style={{ width: "300px" }}
-      >
+      <div className="border-end border-secondary p-3" style={{ width: "300px" }}>
         <h4 className="d-flex justify-content-between align-items-center">
           Games{" "}
           <i
@@ -548,127 +532,130 @@ export default function EditPage() {
         )}
       </div>
 
-      <div className="flex-grow-1 p-4">
-        {selectedGame ? (
-          <>
-            <h3>{selectedGame.game_title}</h3>
+    <div className="flex-grow-1 p-4">
+      {selectedGame ? (
+        <>
+          <h3>{selectedGame.game_title}</h3>
 
-            <div className="mb-4">
-              <h5>Categories</h5>
-              <div className="d-flex align-items-center gap-2 flex-wrap">
-                {(categoriesByGame[selectedGame.game_id] || []).map((cat) => (
-                  <div
-                    key={cat.category_id}
-                    className="d-flex align-items-center"
+          <div className="mb-4">
+            <h5>Categories</h5>
+            <div className="d-flex align-items-center gap-2 flex-wrap">
+              {(categoriesByGame[selectedGame.game_id] || []).map((cat) => (
+                <div key={cat.category_id} className="d-flex align-items-center">
+                  <button
+                    className={`btn ${
+                      activeCategory === cat.category_id
+                        ? "btn-primary"
+                        : "btn-outline-light"
+                    }`}
+                    onClick={() => setActiveCategory(cat.category_id)}
                   >
-                    <button
-                      className={`btn ${
-                        activeCategory === cat.category_id
-                          ? "btn-primary"
-                          : "btn-outline-light"
-                      }`}
-                      onClick={() => setActiveCategory(cat.category_id)}
-                    >
-                      {cat.category_name}
-                    </button>
-                    <i
-                      className="bi bi-pencil-square ms-1"
-                      role="button"
-                      onClick={() => {
-                        setEditingCategory(cat.category_id);
-                        setEditedCategoryName(cat.category_name);
-                      }}
-                    ></i>
-                    <i
-                      className="bi bi-trash ms-1"
-                      role="button"
-                      onClick={() => handleDeleteCategory(cat.category_id)}
-                    ></i>
-                  </div>
-                ))}
+                    {cat.category_name}
+                  </button>
+                  <i
+                    className="bi bi-pencil-square ms-1"
+                    role="button"
+                    onClick={() => {
+                      setEditingCategory(cat.category_id);
+                      setEditedCategoryName(cat.category_name);
+                    }}
+                  ></i>
+                  <i
+                    className="bi bi-trash ms-1"
+                    role="button"
+                    onClick={() => handleDeleteCategory(cat.category_id)}
+                  ></i>
+                </div>
+              ))}
+              <button
+                className="btn btn-primary"
+                onClick={() => handleAddCategory("New Category Name")}
+              >
+                Add Category
+              </button>
+            </div>
+            {editingCategory && (
+              <div className="mt-2">
+                <input
+                  type="text"
+                  className="form-control w-50 d-inline-block me-2"
+                  placeholder="New category name"
+                  value={editedCategoryName}
+                  onChange={(e) => setEditedCategoryName(e.target.value)}
+                />
                 <button
-                  className="btn btn-primary"
-                  onClick={() => handleAddCategory("New Category Name")}
+                  className="btn btn-outline-info"
+                  onClick={handleRenameCategory}
                 >
-                  Add Category
+                  Rename Category
+                </button>
+                <button
+                  className="btn btn-outline-secondary ms-2"
+                  onClick={() => {
+                    setEditingCategory(null);
+                    setEditedCategoryName("");
+                  }}
+                >
+                  Cancel
                 </button>
               </div>
-              {editingCategory && (
-                <div className="mt-2">
-                  <input
-                    type="text"
-                    className="form-control w-50 d-inline-block me-2"
-                    placeholder="New category name"
-                    value={editedCategoryName}
-                    onChange={(e) => setEditedCategoryName(e.target.value)}
-                  />
-                  <button
-                    className="btn btn-outline-info"
-                    onClick={handleRenameCategory}
-                  >
-                    Rename Category
-                  </button>
-                  <button
-                    className="btn btn-outline-secondary ms-2"
-                    onClick={() => {
-                      setEditingCategory(null);
-                      setEditedCategoryName("");
-                    }}
-                  >
-                    Cancel
-                  </button>
-                </div>
-              )}
-            </div>
+            )}
+          </div>
 
-            <div className="mb-4">
-              <h5>Questions</h5>
-              {activeCategory ? (
-                <>
-                  <button
-                    className="btn btn-outline-success mb-2"
-                    onClick={() =>
-                      handleAddQuestion({
-                        question_id: "",
-                        category_id: activeCategory,
-                        question_text: "New Question",
-                        options: ["", "", "", ""],
-                        correct: [],
-                      })
-                    }
+          <div className="mb-4">
+            <h5>Questions</h5>
+            {activeCategory ? (
+              <>
+                <button
+                  className="btn btn-outline-success mb-2"
+                  onClick={() =>
+                    handleAddQuestion({
+                      question_id: "",
+                      category_id: activeCategory,
+                      question_text: "New Question",
+                      option_1: "",
+                      option_2: "",
+                      option_3: "",
+                      option_4: "",
+                      correct_1: false,
+                      correct_2: false,
+                      correct_3: false,
+                      correct_4: false,
+                    })
+                  }
+                >
+                  Add Question
+                </button>
+                <DndContext
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={currentCategoryQuestions.map((q) => q.question_id)}
+                    strategy={verticalListSortingStrategy}
                   >
-                    Add Question
-                  </button>
-                  <DndContext
-                    collisionDetection={closestCenter}
-                    onDragEnd={handleDragEnd}
-                  >
-                    <SortableContext
-                      items={currentCategoryQuestions.map((q) => q.question_id)}
-                      strategy={verticalListSortingStrategy}
-                    >
-                      {currentCategoryQuestions.map((q) => (
-                        <Question
-                          key={q.question_id}
-                          questionData={q}
-                          onChange={(updatedData) =>
-                            handleUpdateQuestion(updatedData)
-                          }
-                          onDelete={() => handleDeleteQuestion(q.question_id)}
-                        />
-                      ))}
-                    </SortableContext>
-                  </DndContext>
-                </>
-              ) : (
-                <p>Please select a category to view its questions.</p>
-              )}
-            </div>
-          </>
-        ) : (
-          <p>Please select a game to view its categories and questions.</p>
-        )}
-      </div>
+                    {currentCategoryQuestions.map((q) => (
+                      <Question
+                        key={q.question_id}
+                        questionData={q}
+                        onChange={(updatedData) =>
+                          handleUpdateQuestion(updatedData)
+                        }
+                        onDelete={() => handleDeleteQuestion(q.question_id)}
+                      />
+                    ))}
+                  </SortableContext>
+                </DndContext>
+              </>
+            ) : (
+              <p>Please select a category to view its questions.</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <p>Please select a game to view its categories and questions.</p>
+      )}
     </div>
+  </div>
   );
 }
