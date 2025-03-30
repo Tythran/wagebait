@@ -10,7 +10,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { createClient } from "@/utils/supabase/client";
-
+import { randomString } from "@/components/utils";
 const supabase = createClient();
 
 interface Game {
@@ -472,39 +472,57 @@ export default function EditPage() {
 
   const currentCategoryQuestions = questionsByCategory[activeCategory] || [];
 
-
-return (
-  <div className="d-flex vh-100 bg-dark text-light animate__animated animate__fadeIn">
-
-    <div className="border-end border-secondary p-3" style={{ width: "300px" }}>
-      <h4 className="d-flex justify-content-between align-items-center">
-        Games{" "}
-        <i
-          className="bi bi-plus"
-          role="button"
-          onClick={() => {
-            handleAddGame();
-                    }}
-        ></i>
-      </h4>
-      <div className="list-group mt-3">
-        {games.map((game) => (
-          <Game
-          key={game.game_id}
-          game={game}
-          isActive={selectedGame?.game_id === game.game_id}
-          onEdit={() => {
-            setSelectedGame(game);
-            const gameCategories = categoriesByGame[game.game_id] || [];
-            setActiveCategory(gameCategories[0]?.category_id || "");
-          }}
-          onDelete={() => handleDeleteGame(game.game_id)}
-          onRename={(newTitle) => handleRenameGame(game.game_id, newTitle)}
-        />
-        
-        ))}
+  const handleActiveGame = async () => {
+      const sessionCode = randomString();
+      const { error } = await supabase
+        .from("active_games")
+        .insert({ session_code: sessionCode, game_id: selectedGame?.game_id, start_time: new Date().toISOString(), round_number: 1 });
+  
+      if (error) {
+          console.error("Error activating game:", error);
+      } else {
+          console.log("Game activated successfully!");
+      }
+  };
+  return (
+    <div className="d-flex vh-100 bg-dark text-light animate__animated animate__fadeIn">
+      {/* Sidebar for Games */}
+      <div className="border-end border-secondary p-3" style={{ width: "300px" }}>
+        <h4 className="d-flex justify-content-between align-items-center">
+          Games{" "}
+          <i
+            className="bi bi-plus"
+            role="button"
+            onClick={() => {
+              handleAddGame();
+            }}
+          ></i>
+        </h4>
+        <div className="list-group mt-3">
+          {games.map((game) => (
+            <Game
+              key={game.game_id}
+              game={game}
+              isActive={selectedGame?.game_id === game.game_id}
+              onEdit={() => {
+                setSelectedGame(game);
+                const gameCategories = categoriesByGame[game.game_id] || [];
+                setActiveCategory(gameCategories[0]?.category_id || "");
+              }}
+              onDelete={() => handleDeleteGame(game.game_id)}
+              onRename={(newTitle) => handleRenameGame(game.game_id, newTitle)}
+            />
+          ))}
+        </div>
+        {selectedGame && (
+          <button
+            className="btn btn-success mt-3 w-100"
+            onClick={handleActiveGame}
+          >
+            Activate Game
+          </button>
+        )}
       </div>
-    </div>
 
     <div className="flex-grow-1 p-4">
       {selectedGame ? (
