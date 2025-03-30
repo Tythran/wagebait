@@ -13,6 +13,7 @@ import type { TablesInsert } from '@/utils/supabase/database.types';
 export default function InitPlayer({
   sessionCode,
   playerID,
+  playerNumber,
   playerName,
   avatarSeed,
   bet,
@@ -20,6 +21,7 @@ export default function InitPlayer({
 }: {
   sessionCode: string;
   playerID: { get: string | null; set: Dispatch<SetStateAction<string | null>> };
+  playerNumber: { get: number | null; set: Dispatch<SetStateAction<number | null>> };
   playerName: { get: string | null; set: Dispatch<SetStateAction<string | null>> };
   avatarSeed: { get: string; set: Dispatch<SetStateAction<string>> };
   bet: { get: number; set: Dispatch<SetStateAction<number>> };
@@ -79,6 +81,7 @@ export default function InitPlayer({
     if (nextVacantPlayer === null || nextVacantPlayer > 4) return;
 
     playerName.set(tempPlayerName);
+    playerNumber.set(nextVacantPlayer);
 
     const { data, error } = await supabase
       .from('active_players')

@@ -12,6 +12,7 @@ export type Database = {
       active_games: {
         Row: {
           betting_pool: number | null
+          blind_player: string | null
           current_bet: number | null
           current_player: string | null
           game_id: string
@@ -23,6 +24,7 @@ export type Database = {
         }
         Insert: {
           betting_pool?: number | null
+          blind_player?: string | null
           current_bet?: number | null
           current_player?: string | null
           game_id?: string
@@ -34,6 +36,7 @@ export type Database = {
         }
         Update: {
           betting_pool?: number | null
+          blind_player?: string | null
           current_bet?: number | null
           current_player?: string | null
           game_id?: string
@@ -44,6 +47,13 @@ export type Database = {
           start_time?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "active_games_blind_player_fkey"
+            columns: ["blind_player"]
+            isOneToOne: false
+            referencedRelation: "active_players"
+            referencedColumns: ["player_id"]
+          },
           {
             foreignKeyName: "active_games_current_player_fkey"
             columns: ["current_player"]
@@ -69,6 +79,7 @@ export type Database = {
       }
       active_players: {
         Row: {
+          acted: boolean | null
           answer_chosen: number | null
           avatar_seed: string | null
           balance: number | null
@@ -82,6 +93,7 @@ export type Database = {
           turn_bet: number
         }
         Insert: {
+          acted?: boolean | null
           answer_chosen?: number | null
           avatar_seed?: string | null
           balance?: number | null
@@ -95,6 +107,7 @@ export type Database = {
           turn_bet: number
         }
         Update: {
+          acted?: boolean | null
           answer_chosen?: number | null
           avatar_seed?: string | null
           balance?: number | null

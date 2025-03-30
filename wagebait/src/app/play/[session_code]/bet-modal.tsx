@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-export default function BetModal({ maxBet }: { maxBet: number }) {
+export default function BetModal({ maxBet, bet }: { maxBet: number; bet: (amount: number) => void }) {
   const [betAmount, setBetAmount] = useState(maxBet * 0.1);
 
   const handleRangeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -12,6 +12,10 @@ export default function BetModal({ maxBet }: { maxBet: number }) {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(event.target.value, 10);
     if (!isNaN(newValue)) setBetAmount(newValue);
+  };
+
+  const handleBet = () => {
+    bet(betAmount);
   };
 
   return (
@@ -57,7 +61,7 @@ export default function BetModal({ maxBet }: { maxBet: number }) {
             <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">
               Cancel
             </button>
-            <button type="button" className="btn btn-primary" data-bs-dismiss="modal">
+            <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={handleBet}>
               Place bet
             </button>
           </div>

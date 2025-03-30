@@ -14,13 +14,27 @@ import style from './buttons.module.css';
 export default function Buttons({
   playerID,
   name,
-  bet,
+  totalBet,
   balance,
+  turnMode,
+  bet,
+  call,
+  check,
+  fold,
+  isTurn,
+  isFolded,
 }: {
   playerID: string;
   name: string;
-  bet: { get: number; set: Dispatch<SetStateAction<number>> };
+  totalBet: { get: number; set: Dispatch<SetStateAction<number>> };
   balance: { get: number; set: Dispatch<SetStateAction<number>> };
+  turnMode: 'call' | 'check';
+  bet: (n: number) => void;
+  call: () => void;
+  check: () => void;
+  fold: () => void;
+  isTurn: boolean;
+  isFolded: boolean;
 }) {
   const supabase = createClient();
 
@@ -69,22 +83,34 @@ export default function Buttons({
           </AnswerButton>
         </ButtonRow>
         <ButtonRow flexGrow={2}>
-          <button type="button" className={actionClass}>
-            Call
-          </button>
-          <button type="button" className={actionClass} data-bs-toggle="modal" data-bs-target="#betModal">
+          {turnMode === 'call' ? (
+            <button type="button" className={actionClass} onClick={call} disabled={!isTurn || isFolded}>
+              Call
+            </button>
+          ) : (
+            <button type="button" className={actionClass} onClick={check} disabled={!isTurn || isFolded}>
+              Check
+            </button>
+          )}
+          <button
+            type="button"
+            className={actionClass}
+            data-bs-toggle="modal"
+            data-bs-target="#betModal"
+            disabled={!isTurn || isFolded}
+          >
             Bet
           </button>
-          <button type="button" className={actionClass}>
+          <button type="button" className={actionClass} onClick={fold} disabled={!isTurn || isFolded}>
             Fold
           </button>
         </ButtonRow>
         <div className="row">
-          <Money name="Bet" amount={bet.get} />
+          <Money name="Bet" amount={totalBet.get} />
           <Money name="Balance" amount={balance.get} />
         </div>
       </div>
-      <BetModal maxBet={balance.get} />
+      <BetModal maxBet={balance.get} bet={bet} />
     </>
   );
 }
