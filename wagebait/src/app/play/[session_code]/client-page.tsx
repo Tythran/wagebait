@@ -22,5 +22,5 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
     );
   }
 
-  return <Buttons />;
+  return <Buttons name={playerName} />;
 }

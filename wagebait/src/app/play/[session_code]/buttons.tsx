@@ -3,7 +3,7 @@ import AnswerButton from './buttons.answer';
 import Money from './buttons.money';
 import ButtonRow from './buttons.row';
 
-export default function Buttons() {
+export default function Buttons({ name }: { name: string }) {
   return (
     <div className="d-flex flex-column gap-3" style={{ height: '100%' }}>
       <div className="row">
@@ -16,7 +16,7 @@ export default function Buttons() {
             textOverflow: 'ellipsis',
           }}
         >
-          John F Kennedy
+          {name}
         </span>
       </div>
       <ButtonRow flexGrow={3}>
