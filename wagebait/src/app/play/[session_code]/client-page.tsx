@@ -24,7 +24,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   const [playerName, setPlayerName] = useState<string | null>(null);
   const [avatarSeed, setAvatarSeed] = useState<string>(randomString());
   const [bet, setBet] = useState<number>(0);
-  const [balance, setBalance] = useState<number>(0);
+  const [balance, setBalance] = useState<number>(1000);
 
   useEffect(() => {
     if (!playerID) return;

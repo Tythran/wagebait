@@ -126,7 +126,7 @@ export default function HostClient({ session_code }: { session_code: string }) {
                   key={player.player_id}
                   name={player.player_name ?? ''}
                   avatarSeed={player.avatar_seed ?? 'a'}
-                  bet={player.bet}
+                  bet={player.total_bet ?? 0}
                   balance={player.balance ?? 0}
                 />
               ))}

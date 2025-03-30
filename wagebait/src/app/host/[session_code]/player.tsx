@@ -32,7 +32,7 @@ export default function Player({
 
   return (
     <div className={style.container}>
-      <div className={`${style.bet} text-center`}>
+      <div className={`${style.bet} text-center`} style={{ opacity: bet > 0 ? 1 : 0 }}>
         <span style={{ fontWeight: 500 }}>BET </span>
         <span style={{ fontSize: '1.25rem' }}>${bet}</span>
       </div>
