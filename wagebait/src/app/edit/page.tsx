@@ -579,7 +579,8 @@ export default function EditPage() {
             <h3>{selectedGame.game_title}</h3>
 
             <div className="mb-4">
-              <h5>Categories</h5>
+              <h5 className="mb-4">Categories</h5>
+              <p className="mt-2 mb-4">Double click to edit title</p>
               <DndContext onDragEnd={handleCategoryDragEnd}>
                 <SortableContext
                   items={(categoriesByGame[selectedGame.game_id] || []).map(
