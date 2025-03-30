@@ -10,7 +10,6 @@ export default async function Host({ params }: { params: Promise<{ session_code:
   const { session_code } = await params;
   console.log(session_code);
 
-  // Fetch players from the database
   const fetchPlayers = async () => {
     const { data, error } = await supabase
       .from('players')
@@ -21,6 +20,7 @@ export default async function Host({ params }: { params: Promise<{ session_code:
     }
     return data || [];
   };
+
   const players = await fetchPlayers();
   const fetchCurrentGame = async () => {
     const { data, error } = await supabase
@@ -44,26 +44,63 @@ export default async function Host({ params }: { params: Promise<{ session_code:
       console.error('Error fetching categories:', error);
     }
     return data || null;
-};
+  };
   const categories = await fetchCategories();
   const fetchQuestions = async () => {
     const { data, error } = await supabase
       .from('question').select('*')
-      .in('category_id', categories?.map((category) => category.id) || [])
+      .in('category_id', categories?.map((category) => category.id) || []);
     if (error) {
       console.error('Error fetching questions:', error);
     }
     return data || null;
   };
   const questions = await fetchQuestions();
-  console.log(questions);
+
+  const shuffledQuestions = questions?.sort(() => Math.random() - 0.5) || [];
+  console.log(shuffledQuestions);
+
+  let currentQuestionIndex = 0;
+
+  const handleCurrentQuestion = () => {
+    if (currentQuestionIndex < shuffledQuestions.length) {
+      return shuffledQuestions[currentQuestionIndex];
+    } else {
+      console.warn('No more questions available.');
+      return null;
+    }
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuestionIndex < shuffledQuestions.length - 1) {
+      currentQuestionIndex++;
+      return shuffledQuestions[currentQuestionIndex];
+    } else {
+      console.warn('No more questions available.');
+      return null;
+    }
+  };
+
+  const currentQuestion = handleCurrentQuestion();
+  console.log('Current Question:', currentQuestion);
+  console.log('next Question:', handleNextQuestion());
+
+
 
   return (
     <>
       <div className={`${styles.pot}`}>Betting Pool: {currentGame?.betting_pool}</div>
       <div className={`${styles.layout}`}>
         <ErrorBoundary fallback={<div>Something went wrong</div>}>
-          <QuestionDisplay questionText="What is my name?" questionOptions={['Tyler', 'Sam', 'Dylan', 'Jacq']} />
+          {currentQuestion ? (
+            <QuestionDisplay
+              key={currentQuestion.id}
+              questionText={currentQuestion.text}
+              questionOptions={currentQuestion.options}
+            />
+          ) : (
+            <div>No current question available</div>
+          )}
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<div>Something went wrong</div>}>
