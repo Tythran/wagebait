@@ -13,10 +13,6 @@ import { createClient } from "@/utils/supabase/client";
 
 const supabase = createClient();
 
-// --- Type Definitions ---
-interface User {
-  user_id: string;
-}
 interface Game {
   game_id: string;
   game_title: string;

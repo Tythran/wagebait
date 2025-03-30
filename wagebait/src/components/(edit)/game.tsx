@@ -40,12 +40,11 @@ const updateGame = async (id: string, newTitle: string) => {
 export default function Game({ game, onEdit, onDelete, onRename, isActive }: GameProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(game.game_title);
-  const [userId, setUserId] = useState<string | null>(null);
+ 
 
   useEffect(() => {
     const getUser = async () => {
       const id = await fetchUser();
-      setUserId(id);
     };
     getUser();
   }, []);
