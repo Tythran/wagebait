@@ -40,3 +40,50 @@ a {
     color-scheme: dark;
   }
 }
+
+body {
+  background-color: #121212;
+}
+
+.card-style {
+  background-color: #2a2a2a;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.25);
+}
+
+.active-game {
+  background-color: rgba(0, 123, 255, 0.2); /* subtle primary highlight */
+  border-left: 3px solid #0d6efd;
+  box-shadow: 0 0 0.5rem rgba(13, 110, 253, 0.25);
+}
+
+.transition-all {
+  transition: all 0.3s ease;
+}
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+.focus-ring:focus {
+  outline: 2px solid #0d6efd;
+  outline-offset: 2px;
+}
+
+.hover-opacity:hover {
+  opacity: 1 !important;
+}
+.opacity-75 {
+  opacity: 0.75;
+}
+
+.hover-scale:hover {
+  transform: scale(1.03);
+  transition: all 0.2s ease-in-out;
+}
+
+.transition-all {
+  transition: all 0.2s ease-in-out;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
