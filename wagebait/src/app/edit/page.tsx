@@ -538,11 +538,8 @@ export default function EditPage() {
         </h4>
         <div className="list-group mt-3">
           {games.map((game) => (
-            <div
-              key={game.game_id}
-              className="d-flex align-items-center justify-content-between mb-2 border border-secondary rounded px-2 py-1 w-100"
-            >
-              <div className="d-flex align-items-center justify-content-between w-100 border border-secondary rounded px-2 py-1">
+            <div key={game.game_id} className="mb-2">
+              <div className="d-flex align-items-center justify-content-between w-100 py-1">
                 <Game
                   game={game}
                   isActive={selectedGame?.game_id === game.game_id}
