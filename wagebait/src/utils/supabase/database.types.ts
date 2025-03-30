@@ -11,21 +11,40 @@ export type Database = {
     Tables: {
       active_games: {
         Row: {
+          betting_pool: number | null
+          current_player: string | null
           game_id: string
+          new_bets: boolean | null
+          round_number: number
           session_code: string
           start_time: string | null
         }
         Insert: {
+          betting_pool?: number | null
+          current_player?: string | null
           game_id?: string
+          new_bets?: boolean | null
+          round_number: number
           session_code: string
           start_time?: string | null
         }
         Update: {
+          betting_pool?: number | null
+          current_player?: string | null
           game_id?: string
+          new_bets?: boolean | null
+          round_number?: number
           session_code?: string
           start_time?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "active_games_current_player_fkey"
+            columns: ["current_player"]
+            isOneToOne: false
+            referencedRelation: "active_players"
+            referencedColumns: ["player_id"]
+          },
           {
             foreignKeyName: "active_games_game_id_fkey"
             columns: ["game_id"]
@@ -38,31 +57,40 @@ export type Database = {
       active_players: {
         Row: {
           answer_chosen: number | null
+          avatar_seed: string | null
           balance: number | null
           bet: number
           folded: boolean | null
+          last_action: string | null
+          player_id: string
           player_name: string | null
-          player_num: number
+          player_number: number
           press_time: string | null
           session_code: string
         }
         Insert: {
           answer_chosen?: number | null
+          avatar_seed?: string | null
           balance?: number | null
           bet: number
           folded?: boolean | null
+          last_action?: string | null
+          player_id?: string
           player_name?: string | null
-          player_num: number
+          player_number: number
           press_time?: string | null
           session_code: string
         }
         Update: {
           answer_chosen?: number | null
+          avatar_seed?: string | null
           balance?: number | null
           bet?: number
           folded?: boolean | null
+          last_action?: string | null
+          player_id?: string
           player_name?: string | null
-          player_num?: number
+          player_number?: number
           press_time?: string | null
           session_code?: string
         }

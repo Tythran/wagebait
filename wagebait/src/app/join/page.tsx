@@ -14,7 +14,7 @@ export default function Join() {
   return (
     <div className="d-flex flex-column gap-3 justify-content-center align-items-center" style={{ height: '100dvh' }}>
       <h1>Join a wagebait game</h1>
-      <form className="d-flex flex-column gap-1 justify-content-center align-items-center">
+      <form className="d-flex flex-column gap-1 justify-content-center align-items-center" onSubmit={handleSubmit}>
         <div className="mb-3">
           <input type="text" className="form-control form-control-lg" id="gameCode" placeholder="Enter game code" />
         </div>
