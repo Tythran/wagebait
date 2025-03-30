@@ -15,6 +15,7 @@ export default function Client({ sessionCode }: { sessionCode: string }) {
   if (!playerName) {
     return (
       <InitPlayer
+        sessionCode={sessionCode}
         playerName={{ get: playerName, set: setPlayerName }}
         avatarSeed={{ get: avatarSeed, set: setAvatarSeed }}
       />

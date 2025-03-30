@@ -19,7 +19,7 @@ export default function Join() {
           <input type="text" className="form-control form-control-lg" id="gameCode" placeholder="Enter game code" />
         </div>
         <button type="button" className="btn btn-lg btn-primary" onClick={handleSubmit}>
-          <i className="bi bi-play-circle me-2" />
+          <i className="bi bi-play me-2" />
           Play
         </button>
       </form>
