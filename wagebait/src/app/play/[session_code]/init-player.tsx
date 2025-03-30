@@ -8,20 +8,29 @@ import { randomString } from '@/components/utils';
 import { createClient } from '@/utils/supabase/client';
 import Loading from '@/components/loading';
 import Back from './back';
+import type { TablesInsert } from '@/utils/supabase/database.types';
 
 export default function InitPlayer({
   sessionCode,
+  playerID,
   playerName,
   avatarSeed,
+  bet,
+  balance,
 }: {
   sessionCode: string;
+  playerID: { get: string | null; set: Dispatch<SetStateAction<string | null>> };
   playerName: { get: string | null; set: Dispatch<SetStateAction<string | null>> };
   avatarSeed: { get: string; set: Dispatch<SetStateAction<string>> };
+  bet: { get: number; set: Dispatch<SetStateAction<number>> };
+  balance: { get: number; set: Dispatch<SetStateAction<number>> };
 }) {
   const supabase = createClient();
 
   const [tempPlayerName, setTempPlayerName] = useState<string>('');
   const [nextVacantPlayer, setNextVacantPlayer] = useState<number | null>(null);
+
+  // ===================================================================================================================
 
   useEffect(() => {
     const getNextVacantPlayer = async () => {
@@ -43,6 +52,8 @@ export default function InitPlayer({
     getNextVacantPlayer();
   }, [sessionCode, supabase]);
 
+  // ===================================================================================================================
+
   const avatar = useMemo(() => {
     return createAvatar(openPeeps, {
       seed: avatarSeed.get,
@@ -59,9 +70,15 @@ export default function InitPlayer({
 
   if (nextVacantPlayer > 4) return <Back text="Game is full" />;
 
+  // ===================================================================================================================
+
   async function handleClick(e: SyntheticEvent): Promise<void> {
     e.preventDefault();
+
+    if (nextVacantPlayer === null || nextVacantPlayer > 4) return;
+
     playerName.set(tempPlayerName);
+
     const { data, error } = await supabase
       .from('active_players')
       .insert([
@@ -69,18 +86,22 @@ export default function InitPlayer({
           player_name: tempPlayerName,
           session_code: sessionCode,
           avatar_seed: avatarSeed.get,
-          bet: 0,
-          balance: 1000,
+          bet: bet.get,
+          balance: balance.get,
           player_number: nextVacantPlayer,
         },
-      ])
-      .select();
+      ] satisfies TablesInsert<'active_players'>[])
+      .select()
+      .single();
+
     if (error) {
       console.error(error);
     } else {
-      console.log(data);
+      playerID.set(data.player_id);
     }
   }
+
+  // ===================================================================================================================
 
   return (
     <div

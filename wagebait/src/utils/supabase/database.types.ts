@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       active_games: {
         Row: {
+          betting_pool: number | null
           current_player: string | null
           game_id: string
           new_bets: boolean | null
@@ -19,6 +20,7 @@ export type Database = {
           start_time: string | null
         }
         Insert: {
+          betting_pool?: number | null
           current_player?: string | null
           game_id?: string
           new_bets?: boolean | null
@@ -27,6 +29,7 @@ export type Database = {
           start_time?: string | null
         }
         Update: {
+          betting_pool?: number | null
           current_player?: string | null
           game_id?: string
           new_bets?: boolean | null
@@ -54,6 +57,7 @@ export type Database = {
       active_players: {
         Row: {
           answer_chosen: number | null
+          avatar_seed: string | null
           balance: number | null
           bet: number
           folded: boolean | null
@@ -66,6 +70,7 @@ export type Database = {
         }
         Insert: {
           answer_chosen?: number | null
+          avatar_seed?: string | null
           balance?: number | null
           bet: number
           folded?: boolean | null
@@ -78,6 +83,7 @@ export type Database = {
         }
         Update: {
           answer_chosen?: number | null
+          avatar_seed?: string | null
           balance?: number | null
           bet?: number
           folded?: boolean | null
