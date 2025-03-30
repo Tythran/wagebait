@@ -43,7 +43,7 @@ export default function Buttons({
   const handleClick = async (option: number) => {
     const { error } = await supabase
       .from('active_players')
-      .update({ answer_chosen: option } satisfies TablesUpdate<'active_players'>)
+      .update({ answer_chosen: option, press_time: new Date().toISOString() } satisfies TablesUpdate<'active_players'>)
       .eq('player_id', playerID)
       .select();
 
