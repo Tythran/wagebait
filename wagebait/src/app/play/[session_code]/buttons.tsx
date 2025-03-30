@@ -2,13 +2,14 @@
 
 import { createClient } from '@/utils/supabase/client';
 
-import ActionButton from './buttons.action';
 import AnswerButton from './buttons.answer';
 import Money from './buttons.money';
 import ButtonRow from './buttons.row';
 import type { TablesUpdate } from '@/utils/supabase/database.types';
 import type { Dispatch, SetStateAction } from 'react';
 import BetModal from './bet-modal';
+
+import style from './buttons.module.css';
 
 export default function Buttons({
   playerID,
@@ -30,10 +31,10 @@ export default function Buttons({
       .eq('player_id', playerID)
       .select();
 
-    if (error) {
-      console.error(error);
-    }
+    if (error) console.error(error);
   };
+
+  const actionClass = `btn btn-secondary flex-grow-1 ${style.actionButton}`;
 
   return (
     <>
@@ -68,9 +69,15 @@ export default function Buttons({
           </AnswerButton>
         </ButtonRow>
         <ButtonRow flexGrow={2}>
-          <ActionButton>Call</ActionButton>
-          <ActionButton>Bet</ActionButton>
-          <ActionButton>Fold</ActionButton>
+          <button type="button" className={actionClass}>
+            Call
+          </button>
+          <button type="button" className={actionClass} data-bs-toggle="modal" data-bs-target="#betModal">
+            Bet
+          </button>
+          <button type="button" className={actionClass}>
+            Fold
+          </button>
         </ButtonRow>
         <div className="row">
           <Money name="Bet" amount={bet.get} />

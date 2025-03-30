@@ -86,7 +86,7 @@ export default function InitPlayer({
           player_name: tempPlayerName,
           session_code: sessionCode,
           avatar_seed: avatarSeed.get,
-          bet: bet.get,
+          turn_bet: bet.get,
           balance: balance.get,
           player_number: nextVacantPlayer,
         },
