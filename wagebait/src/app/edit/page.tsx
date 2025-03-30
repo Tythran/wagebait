@@ -11,6 +11,7 @@ import {
 } from "@dnd-kit/sortable";
 import { createClient } from "@/utils/supabase/client";
 import { randomString } from "@/components/utils";
+import { useNavigate } from "react-router-dom";
 const supabase = createClient();
 
 interface Game {
@@ -51,6 +52,8 @@ export default function EditPage() {
   const [editedCategoryName, setEditedCategoryName] = useState<string>("");
 
   const [userId, setUserId] = useState<string | null>(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserAndData = async () => {
@@ -493,6 +496,7 @@ export default function EditPage() {
       console.error("Error activating game:", error);
     } else {
       console.log("Game activated successfully!");
+      navigate(`/host/${sessionCode}`);
     }
   };
 
