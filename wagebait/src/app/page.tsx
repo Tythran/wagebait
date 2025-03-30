@@ -8,7 +8,7 @@ export default function Home() {
       <div>wagebait</div>
 
       <div className="d-flex gap-2">
-        <Link href={'/play'}>
+        <Link href={'/join'}>
           <button type="button" className="btn btn-primary">
             Join game
           </button>

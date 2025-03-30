@@ -32,7 +32,10 @@ export default function Player({
 
   return (
     <div className={style.container}>
-      <div className={`${style.bet} text-center`}>BET ${bet}</div>
+      <div className={`${style.bet} text-center`}>
+        <span style={{ fontWeight: 500 }}>BET </span>
+        <span style={{ fontSize: '1.25rem' }}>${bet}</span>
+      </div>
       <div>
         <div className={`${style.name} text-center`}>{name}</div>
         {img}

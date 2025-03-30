@@ -1,8 +1,8 @@
 const optionStyles = [
-  { icon: 'bi-square-fill', color: 'bg-green-500' },
-  { icon: 'bi-circle-fill', color: 'bg-yellow-400' },
-  { icon: 'bi-triangle-fill', color: 'bg-red-500' },
-  { icon: 'bi-diamond-fill', color: 'bg-blue-500' },
+  { icon: 'bi-square', color: 'success' },
+  { icon: 'bi-circle', color: 'danger' },
+  { icon: 'bi-triangle', color: 'warning' },
+  { icon: 'bi-diamond', color: 'info' },
 ];
 
 export default function QuestionDisplay({
@@ -25,11 +25,10 @@ export default function QuestionDisplay({
                 return (
                   <div key={i} className="col-6">
                     <div
-                      className={`d-flex align-items-center gap-3 p-4 rounded-4 shadow ${color} hover-shadow transition`}
-                      style={{ cursor: 'pointer' }}
+                      className={`d-flex align-items-center gap-3 p-4 rounded-4 shadow text-bg-${color} bg-gradient`}
                     >
-                      <i className={`bi ${icon} fs-3`}></i>
-                      <span className="fs-5 fw-semibold">{opt}</span>
+                      <i className={`bi ${icon} fs-1`}></i>
+                      <span className="fs-4 fw-semibold">{opt}</span>
                     </div>
                   </div>
                 );

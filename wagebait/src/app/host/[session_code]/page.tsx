@@ -10,9 +10,10 @@ export default async function Host({ params }: { params: Promise<{ session_code:
 
   return (
     <>
+      <div className={`${styles.pot}`}>Betting Pool: $2000</div>
       <div className={`${styles.layout}`}>
         <ErrorBoundary fallback={<div>Something went wrong</div>}>
-          <QuestionDisplay questionText="What is my name?" questionOptions={['Tyler', 'Bobby', 'Craig', 'Lisa']} />
+          <QuestionDisplay questionText="What is my name?" questionOptions={['Tyler', 'Sam', 'Dylan', 'Jacq']} />
         </ErrorBoundary>
 
         <ErrorBoundary fallback={<div>Something went wrong</div>}>

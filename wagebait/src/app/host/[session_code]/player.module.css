@@ -7,14 +7,17 @@
 .container * {
   min-width: 0;
   max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bet {
-  font-size: 1.25rem;
-  /* width: 70%; */
   background-color: #84c;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  max-width: 140px;
+  padding: 0 0.5rem;
 }
 
 .name {
@@ -25,9 +28,6 @@
   padding: 0.5rem;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .avatar {
