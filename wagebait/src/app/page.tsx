@@ -9,7 +9,7 @@ export default function Home() {
 
       <div className="d-flex gap-2">
         <Link href={'/join'}>
-          <button type="button" className="btn btn-primary bg-gradient button-font">
+          <button type="button" className="btn btn-primary">
             Join game
           </button>
         </Link>
