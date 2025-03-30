@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 import { createAvatar } from '@dicebear/core';
-import { openPeeps } from '@dicebear/collection';
+import { bottts } from '@dicebear/collection';
 
 function App() {
   const seed = 'player2';
   const avatar = useMemo(() => {
-    return createAvatar(openPeeps, {
+    return createAvatar(bottts, {
       seed: seed,
-      size: 128
+      size: 200
     }).toDataUri();
   }, [seed]);
 
